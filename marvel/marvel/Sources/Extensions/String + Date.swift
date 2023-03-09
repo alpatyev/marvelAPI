@@ -14,7 +14,6 @@ extension Date {
 // MARK: - Hash from current string
 
 extension String {
-    
     func hashedUsingMD5() -> String {
         let dataString = Data(self.utf8)
         let hash = Insecure.MD5.hash(data: dataString)

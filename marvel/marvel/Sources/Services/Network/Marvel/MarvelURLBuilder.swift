@@ -1,6 +1,11 @@
 import Foundation
+import CloudKit
 
-final class MarvelURLBuilder {
+// MARK: - Marvel URL builder
+
+final class MarvelURLBuilder {    
+    
+    // MARK: - Private properties
     
     private let publicKey = "cf84e95c6735b5f2cebe6583497d937d"
     private let privateKey = "e62bc278ee244cf43225a6279cd0895ebf5c97d2"
@@ -14,18 +19,20 @@ final class MarvelURLBuilder {
         return components
     }()
     
-    public func getURLForRandom() -> URL? {
-        components.queryItems = createTodayQuery(for: URLQueryItem(name: "name",
-                                                                   value: "Spider-Man"))
+    // MARK: - Public methods
+    
+    public func createURL(with type: MarvelRequestType) -> URL? {
         return components.url
     }
     
-    private func createTodayQuery(for parameter: URLQueryItem) -> [URLQueryItem] {
+    // MARK: - Private methods
+    
+    
+    
+    private func createTodayQuery() -> [URLQueryItem] {
         let todayDate = Date().asString(with: "yyyy.MM.dd")
         let todayHash = (todayDate + privateKey + publicKey).hashedUsingMD5()
-        
-        return [parameter,
-                URLQueryItem(name: "ts", value: todayDate),
+        return [URLQueryItem(name: "ts", value: todayDate),
                 URLQueryItem(name: "apikey", value: publicKey),
                 URLQueryItem(name: "hash", value: todayHash)]
     }

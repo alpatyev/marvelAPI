@@ -58,6 +58,6 @@ final class ListViewController: UIViewController {
     
     @objc private func tapped() {
         print("tapped")
-        print(MarvelURLBuilder().getURLForRandom())
+        
     }
 }
