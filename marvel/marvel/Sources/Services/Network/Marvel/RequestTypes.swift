@@ -3,16 +3,27 @@ import Foundation
 // MARK: - Request types
 
 enum MarvelRequestType {
+    case getComicsForCharacterName(String)
     case getCharactersForName(String)
-    case getCharactersForID(Int)
-    case getImageWith(url: URL?, type: MarvelImageType)
+    case getCharacterForID(Int)
+    case getImageWith(url: String, type: MarvelImageType)
 }
 
-// MARK: - Image types
+// MARK: - Requesting image types
 
 enum MarvelImageType {
     case small
-    case medium
     case large
     case full
+    
+    var option: String {
+        switch self {
+            case .small:
+                return "standard_medium"
+            case .large:
+                return "standard_fantastic"
+            case .full:
+                return ""
+        }
+    }
 }

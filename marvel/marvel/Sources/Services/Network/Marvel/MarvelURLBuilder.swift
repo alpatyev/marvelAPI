@@ -22,12 +22,23 @@ final class MarvelURLBuilder {
     // MARK: - Public methods
     
     public func createURL(with type: MarvelRequestType) -> URL? {
+        switch type {
+            case .getComicsForCharacterName(let name):
+                components.path = "/v1/public/comics"
+                components.queryItems = [URLQueryItem(name: "characters", value: name)] + createTodayQuery()
+            case .getCharactersForName(let name):
+                components.path = "/v1/public/characters"
+                components.queryItems = [URLQueryItem(name: "name", value: name)] + createTodayQuery()
+            case .getCharacterForID(let int):
+                components.path = "/v1/public/characters/\(int)"
+                components.queryItems = createTodayQuery()
+            case .getImageWith(let url, let imageType):
+                return URL(string: "https" + url.dropFirst(4) + "/" + imageType.option + ".jpg")
+        }
         return components.url
     }
     
     // MARK: - Private methods
-    
-    
     
     private func createTodayQuery() -> [URLQueryItem] {
         let todayDate = Date().asString(with: "yyyy.MM.dd")

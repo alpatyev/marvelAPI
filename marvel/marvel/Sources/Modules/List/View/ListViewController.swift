@@ -58,6 +58,10 @@ final class ListViewController: UIViewController {
     
     @objc private func tapped() {
         print("tapped")
-        
+        let service = MarvelURLBuilder()
+        print(service.createURL(with: .getCharacterForID(1011334))!)
+        print(service.createURL(with: .getCharactersForName("3-D Man"))!)
+        print(service.createURL(with: .getComicsForCharacterName("3-D Man"))!)
+        print(service.createURL(with: .getImageWith(url: "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784", type: .large))!)
     }
 }
