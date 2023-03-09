@@ -10,6 +10,17 @@ final class ListViewController: UIViewController {
     
     // MARK: - View model
     
+    // MARK: - UI
+    
+    private lazy var requestButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("request", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
+        button.setTitleColor(.blue.withAlphaComponent(0.5), for: .highlighted)
+        button.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+        return button
+    }()
+    
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -27,15 +38,26 @@ final class ListViewController: UIViewController {
     }
     
     private func setupView() {
-        view.backgroundColor = .darkGray
-        print("assert")
+        view.backgroundColor = .black
+        print("loaded list view")
     }
     
     private func setupHierarchy() {
-        
+        view.addSubview(requestButton)
     }
     
     private func setupLayout() {
-        
+        requestButton.snp.makeConstraints { make in
+            make.width.equalToSuperview().dividedBy(2)
+            make.height.equalTo(requestButton.snp.width).dividedBy(2)
+            make.center.equalToSuperview()
+        }
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func tapped() {
+        print("tapped")
+        print(MarvelURLBuilder().getURLForRandom())
     }
 }
