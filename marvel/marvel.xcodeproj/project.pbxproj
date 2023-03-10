@@ -12,6 +12,7 @@
 		643363A129BA5D4000584EB3 /* MarvelResponseType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363A029BA5D4000584EB3 /* MarvelResponseType.swift */; };
 		643363A329BA6AB100584EB3 /* String + Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363A229BA6AB100584EB3 /* String + Date.swift */; };
 		643363A529BA7CC900584EB3 /* RequestTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363A429BA7CC800584EB3 /* RequestTypes.swift */; };
+		643363A729BB565000584EB3 /* MarvelDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363A629BB564F00584EB3 /* MarvelDataModels.swift */; };
 		648B7DA729BA46D7003C60EA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 648B7DA629BA46D7003C60EA /* Alamofire */; };
 		648B7DAA29BA470B003C60EA /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 648B7DA929BA470B003C60EA /* RxCocoa */; };
 		648B7DAC29BA470B003C60EA /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 648B7DAB29BA470B003C60EA /* RxRelay */; };
@@ -44,6 +45,7 @@
 		643363A029BA5D4000584EB3 /* MarvelResponseType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarvelResponseType.swift; sourceTree = "<group>"; };
 		643363A229BA6AB100584EB3 /* String + Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String + Date.swift"; sourceTree = "<group>"; };
 		643363A429BA7CC800584EB3 /* RequestTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestTypes.swift; sourceTree = "<group>"; };
+		643363A629BB564F00584EB3 /* MarvelDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarvelDataModels.swift; sourceTree = "<group>"; };
 		648E6B3D29BA3BEC00BD0C20 /* marvel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = marvel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		648E6B4029BA3BED00BD0C20 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		648E6B4229BA3BED00BD0C20 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 				6433639E29BA5D0900584EB3 /* MarvelURLBuilder.swift */,
 				643363A029BA5D4000584EB3 /* MarvelResponseType.swift */,
 				643363A429BA7CC800584EB3 /* RequestTypes.swift */,
+				643363A629BB564F00584EB3 /* MarvelDataModels.swift */,
 			);
 			path = Marvel;
 			sourceTree = "<group>";
@@ -316,6 +319,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				643363A729BB565000584EB3 /* MarvelDataModels.swift in Sources */,
 				6433639F29BA5D0900584EB3 /* MarvelURLBuilder.swift in Sources */,
 				648E6B4129BA3BED00BD0C20 /* AppDelegate.swift in Sources */,
 				648E6B4329BA3BED00BD0C20 /* SceneDelegate.swift in Sources */,

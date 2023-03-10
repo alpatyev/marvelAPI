@@ -1,6 +1,5 @@
 import UIKit
 import SnapKit
-import Alamofire
 import RxSwift
 import RxCocoa
 
@@ -58,10 +57,33 @@ final class ListViewController: UIViewController {
     
     @objc private func tapped() {
         print("tapped")
-        let service = MarvelURLBuilder()
-        print(service.createURL(with: .getCharacterForID(1011334))!)
-        print(service.createURL(with: .getCharactersForName("3-D Man"))!)
-        print(service.createURL(with: .getComicsForCharacterName("3-D Man"))!)
-        print(service.createURL(with: .getImageWith(url: "http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784", type: .large))!)
+        MarvelDataService().getData(using: .getCharactersForName(""), completion: { result in
+            switch result {
+                case .data(let marvelData):
+                    switch marvelData {
+                        case .character(let marvelCharacter):
+                            print(marvelCharacter)
+                        case .characterList(let array):
+                            for i in array {
+                                print(i)
+                            }
+                        case .comicsList(let array):
+                            for i in array {
+                                print(i)
+                            }
+                        case .image(let data):
+                            print(data.description)
+                    }
+                case .error(let marvelError):
+                    switch marvelError {
+                        case .url(let string):
+                            print(string)
+                        case .network(let string):
+                            print(string)
+                        case .data(let string):
+                            print(string)
+                    }
+            }
+        })
     }
 }

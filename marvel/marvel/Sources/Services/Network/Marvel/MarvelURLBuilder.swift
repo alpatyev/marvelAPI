@@ -1,5 +1,4 @@
 import Foundation
-import CloudKit
 
 // MARK: - Marvel URL builder
 
@@ -28,7 +27,7 @@ final class MarvelURLBuilder {
                 components.queryItems = [URLQueryItem(name: "characters", value: name)] + createTodayQuery()
             case .getCharactersForName(let name):
                 components.path = "/v1/public/characters"
-                components.queryItems = [URLQueryItem(name: "name", value: name)] + createTodayQuery()
+                components.queryItems = [URLQueryItem(name: "nameStartsWith", value: name)] + createTodayQuery()
             case .getCharacterForID(let int):
                 components.path = "/v1/public/characters/\(int)"
                 components.queryItems = createTodayQuery()
