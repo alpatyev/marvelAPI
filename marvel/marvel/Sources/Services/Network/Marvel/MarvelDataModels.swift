@@ -9,12 +9,3 @@ struct MarvelResponseModel<DataModel: Decodable>: Decodable {
 struct MarvelDataModel<Container: Decodable>: Decodable {
     let results: [Container]
 }
-
-struct MarvelCharacter: Decodable {
-    
-}
-
-struct MarvelComics: Decodable {
-    
-}
-

@@ -17,10 +17,12 @@ final class MarvelDataService {
         }
         
         AF.request(url).response(completionHandler: { result in
-            if let data = result.data {
-                return completion(self.serialize(with: type, from: data))
-            } else {
-                return completion(.error(.network("Data not recieved")))
+            DispatchQueue.main.async {
+                if let data = result.data {
+                    return completion(self.serialize(with: type, from: data))
+                } else {
+                    return completion(.error(.network("Data not recieved")))
+                }
             }
         })
     }
@@ -33,28 +35,30 @@ final class MarvelDataService {
             switch type {
                 case .getComicsForCharacterName(_):
                     let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<MarvelComics>>.self, from: data)
-                    return .data(.comicsList(decoded.data.results))
-                case .getCharactersForName(_), .getCharacterForID(_):
+                    return checkedForAmount(of: decoded, .data(.comicsList(decoded.data.results)))
+                case .getCharactersForName(_):
                     let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<MarvelCharacter>>.self, from: data)
-                    
-                    let list = decoded.data.results
-                    if list.count > 1 {
-                        return .data(.characterList(list))
+                    return checkedForAmount(of: decoded, .data(.characterList(decoded.data.results)))
+                case .getCharacterForID(_):
+                    let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<MarvelCharacter>>.self, from: data)
+                    if let character = decoded.data.results.first {
+                        return .data(.character(character))
                     } else {
-                        if let one = list.first {
-                            return .data(.character(one))
-                        } else {
-                            return .error(.data("Sorry, no characters are found"))
-                        }
+                        return .error(.data("Character with exact ID does not exist"))
                     }
                 case .getImageWith(_, _):
                     return .data(.image(data))
             }
-        } catch let decodingError {
-            return .error(.data(decodingError.localizedDescription))
+        } catch let error {
+            return .error(.data(error.localizedDescription))
         }
     }
-
+    
+    private func checkedForAmount<T>(of characters: MarvelResponseModel<MarvelDataModel<T>>, _ sucess: MarvelResult) -> MarvelResult {
+        if characters.data.results.count > 0 {
+            return sucess
+        } else {
+            return .error(.data("Not founded!"))
+        }
+    }
 }
-
-

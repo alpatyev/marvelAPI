@@ -9,21 +9,42 @@ final class ListViewController: UIViewController {
     
     // MARK: - View model
     
+    private var viewModel: ListViewModelProtocol?
+    
     // MARK: - UI
     
-    private lazy var requestButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("request", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
-        button.setTitleColor(.blue.withAlphaComponent(0.5), for: .highlighted)
-        button.addTarget(self, action: #selector(tapped), for: .touchUpInside)
-        return button
+    private lazy var searchTextField: UITextField = {
+        let textField = UITextField()
+        textField.layer.cornerRadius = Constants.Layout.cornerRadius
+        textField.layer.borderWidth = Constants.Layout.borderWidth
+        textField.layer.borderColor = Constants.Colors.main.cgColor
+        textField.backgroundColor = Constants.Colors.white
+        textField.textColor = Constants.Colors.black
+        textField.textAlignment = .center
+        textField.font = Constants.Fonts.subheader
+        textField.attributedPlaceholder = NSAttributedString(
+            string: "search characters",
+            attributes: [.foregroundColor: Constants.Colors.main.withAlphaComponent(0.5),
+                         .font: Constants.Fonts.monospaced])
+        textField.keyboardType = .asciiCapable
+        textField.keyboardAppearance = .dark
+        textField.returnKeyType = .google
+        return textField
+    }()
+    
+    private lazy var charactersList: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = Constants.Colors.tint
+        return tableView
     }()
     
     // MARK: - Lifecycle
+    
+    private lazy var bag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = ListViewModel()
         setupRx()
         setupView()
         setupHierarchy()
@@ -33,7 +54,9 @@ final class ListViewController: UIViewController {
     // MARK: - Setups
     
     private func setupRx() {
-        
+        searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { _ in
+            self.viewModel?.textFieldReturned(name: self.searchTextField.text)
+        }.disposed(by: bag)
     }
     
     private func setupView() {
@@ -42,48 +65,22 @@ final class ListViewController: UIViewController {
     }
     
     private func setupHierarchy() {
-        view.addSubview(requestButton)
+        view.addSubview(searchTextField)
+        view.addSubview(charactersList)
     }
     
     private func setupLayout() {
-        requestButton.snp.makeConstraints { make in
-            make.width.equalToSuperview().dividedBy(2)
-            make.height.equalTo(requestButton.snp.width).dividedBy(2)
-            make.center.equalToSuperview()
+        searchTextField.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.left.right.equalToSuperview()
+            make.height.equalTo(Constants.Layout.defaultHeight)
         }
-    }
-    
-    // MARK: - Actions
-    
-    @objc private func tapped() {
-        print("tapped")
-        MarvelDataService().getData(using: .getCharactersForName(""), completion: { result in
-            switch result {
-                case .data(let marvelData):
-                    switch marvelData {
-                        case .character(let marvelCharacter):
-                            print(marvelCharacter)
-                        case .characterList(let array):
-                            for i in array {
-                                print(i)
-                            }
-                        case .comicsList(let array):
-                            for i in array {
-                                print(i)
-                            }
-                        case .image(let data):
-                            print(data.description)
-                    }
-                case .error(let marvelError):
-                    switch marvelError {
-                        case .url(let string):
-                            print(string)
-                        case .network(let string):
-                            print(string)
-                        case .data(let string):
-                            print(string)
-                    }
-            }
-        })
+        
+        charactersList.snp.makeConstraints { make in
+            make.top.equalTo(searchTextField.snp.bottom).offset(Constants.Layout.indent)
+            make.left.equalToSuperview().offset(Constants.Layout.indent / 2)
+            make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
     }
 }

@@ -1,4 +1,5 @@
 import Foundation
+
 // MARK: - Common marvel result type
 
 enum MarvelResult {
@@ -22,6 +23,3 @@ enum MarvelError: Error {
     case network(String)
     case data(String)
 }
-
-
-
