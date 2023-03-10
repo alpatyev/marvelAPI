@@ -9,6 +9,7 @@ enum Constants {
         static let black = UIColor.black
         static let main = UIColor.systemRed
         static let tint = UIColor.gray.withAlphaComponent(0.1)
+        static let hardTint = UIColor.gray.withAlphaComponent(0.25)
     }
     
     enum Fonts {
@@ -23,11 +24,5 @@ enum Constants {
         static let cornerRadius: CGFloat = 24
         static let defaultHeight: CGFloat = 48
         static let indent: CGFloat = 16
-    }
-    
-    enum Mock {
-        static let emptyItem: CharacterItem = CharacterItem(id: 0,
-                                                            name: "",
-                                                            thumbnail: CharacterImage(path: ""))
     }
 }

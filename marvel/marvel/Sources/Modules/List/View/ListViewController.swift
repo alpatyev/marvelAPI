@@ -11,6 +11,10 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     private var viewModel: ListViewModelProtocol?
     
+    // MARK: - Private properties
+    
+    private let bag = DisposeBag()
+    
     // MARK: - UI
     
     private lazy var searchTextField: UITextField = {
@@ -34,15 +38,14 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     private lazy var charactersList: UITableView = {
         let tableView = UITableView()
+        tableView.separatorStyle = .none
         tableView.backgroundColor = Constants.Colors.black
         tableView.rx.setDelegate(self).disposed(by: bag)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(MarvelCell.self, forCellReuseIdentifier: MarvelCell.id)
         return tableView
     }()
-    
+        
     // MARK: - Lifecycle
-    
-    private lazy var bag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,19 +65,13 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
         viewModel?.items.asObservable()
             .bind(to: charactersList.rx
-                    .items(cellIdentifier: "cell", cellType: UITableViewCell.self))
-        { index, element, cell in
-            cell.backgroundColor = Constants.Colors.tint
-            cell.textLabel?.textColor = Constants.Colors.main
-            cell.textLabel?.text = element.name
-            cell.imageView?.image = UIImage(systemName: "circle")
-            cell.accessoryType = .disclosureIndicator
-            cell.layer.cornerRadius = Constants.Layout.cornerRadius / 2
+                    .items(cellIdentifier: MarvelCell.id, cellType: MarvelCell.self)) { _, item, cell in
+                cell.configure(with: item.name)
         }.disposed(by: bag)
         
         charactersList.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in
-                self?.charactersList.deselectRow(at: indexPath, animated: true)
-                print(indexPath)
+            self?.viewModel?.selected(at: indexPath)
+            self?.charactersList.deselectRow(at: indexPath, animated: true)
         }).disposed(by: bag)
     }
     
@@ -101,5 +98,13 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
             make.bottom.equalToSuperview()
         }
+    }
+}
+
+// MARK: - Setup cell size
+
+extension ListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        Constants.Layout.defaultHeight * 1.5
     }
 }
