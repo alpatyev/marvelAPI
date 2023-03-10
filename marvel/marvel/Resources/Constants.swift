@@ -24,4 +24,10 @@ enum Constants {
         static let defaultHeight: CGFloat = 48
         static let indent: CGFloat = 16
     }
+    
+    enum Mock {
+        static let emptyItem: CharacterItem = CharacterItem(id: 0,
+                                                            name: "",
+                                                            thumbnail: CharacterImage(path: ""))
+    }
 }

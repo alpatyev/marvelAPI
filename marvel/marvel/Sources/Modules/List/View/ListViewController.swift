@@ -5,7 +5,7 @@ import RxCocoa
 
 // MARK: - List view controller
 
-final class ListViewController: UIViewController {
+final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - View model
     
@@ -34,7 +34,9 @@ final class ListViewController: UIViewController {
     
     private lazy var charactersList: UITableView = {
         let tableView = UITableView()
-        tableView.backgroundColor = Constants.Colors.tint
+        tableView.backgroundColor = Constants.Colors.black
+        tableView.rx.setDelegate(self).disposed(by: bag)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         return tableView
     }()
     
@@ -57,6 +59,23 @@ final class ListViewController: UIViewController {
         searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { _ in
             self.viewModel?.textFieldReturned(name: self.searchTextField.text)
         }.disposed(by: bag)
+    
+        viewModel?.items.asObservable()
+            .bind(to: charactersList.rx
+                    .items(cellIdentifier: "cell", cellType: UITableViewCell.self))
+        { index, element, cell in
+            cell.backgroundColor = Constants.Colors.tint
+            cell.textLabel?.textColor = Constants.Colors.main
+            cell.textLabel?.text = element.name
+            cell.imageView?.image = UIImage(systemName: "circle")
+            cell.accessoryType = .disclosureIndicator
+            cell.layer.cornerRadius = Constants.Layout.cornerRadius / 2
+        }.disposed(by: bag)
+        
+        charactersList.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in
+                self?.charactersList.deselectRow(at: indexPath, animated: true)
+                print(indexPath)
+        }).disposed(by: bag)
     }
     
     private func setupView() {
@@ -80,7 +99,7 @@ final class ListViewController: UIViewController {
             make.top.equalTo(searchTextField.snp.bottom).offset(Constants.Layout.indent)
             make.left.equalToSuperview().offset(Constants.Layout.indent / 2)
             make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalToSuperview()
         }
     }
 }

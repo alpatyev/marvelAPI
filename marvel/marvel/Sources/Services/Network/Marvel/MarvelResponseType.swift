@@ -10,10 +10,23 @@ enum MarvelResult {
 // MARK: - Response types
 
 enum MarvelData {
-    case character(MarvelCharacter)
-    case characterList([MarvelCharacter])
+    case character(CharacterItem)
+    case characterList([CharacterItem])
     case comicsList([MarvelComics])
     case image(Data)
+    
+    var value: Any {
+        switch self {
+            case .character(let marvelCharacter):
+                return marvelCharacter
+            case .characterList(let list):
+                return list
+            case .comicsList(let list):
+                return list
+            case .image(let data):
+                return data
+        }
+    }
 }
 
 // MARK: - Error types

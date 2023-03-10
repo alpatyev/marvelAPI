@@ -2,6 +2,8 @@ import Foundation
 
 // MARK: - Character model
 
-struct MarvelCharacter: Decodable {
-    
+struct CharacterItem: Decodable {
+    let id: Int
+    let name: String
+    let thumbnail: CharacterImage
 }

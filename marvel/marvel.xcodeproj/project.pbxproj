@@ -95,9 +95,9 @@
 			children = (
 				6433639A29BA5B0100584EB3 /* MarvelDataService.swift */,
 				6433639E29BA5D0900584EB3 /* MarvelURLBuilder.swift */,
-				643363A029BA5D4000584EB3 /* MarvelResponseType.swift */,
 				643363A429BA7CC800584EB3 /* RequestTypes.swift */,
 				643363A629BB564F00584EB3 /* MarvelDataModels.swift */,
+				643363A029BA5D4000584EB3 /* MarvelResponseType.swift */,
 			);
 			path = Marvel;
 			sourceTree = "<group>";
