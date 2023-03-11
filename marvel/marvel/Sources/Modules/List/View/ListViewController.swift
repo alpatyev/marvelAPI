@@ -63,10 +63,10 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             self.viewModel?.textFieldReturned(name: self.searchTextField.text)
         }.disposed(by: bag)
     
-        viewModel?.items.asObservable()
+        viewModel?.itemsRelay.asObservable()
             .bind(to: charactersList.rx
                     .items(cellIdentifier: MarvelCell.id, cellType: MarvelCell.self)) { _, item, cell in
-                cell.configure(with: item.name)
+                cell.configure(with: item.name, data: item.imageData)
         }.disposed(by: bag)
         
         charactersList.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in

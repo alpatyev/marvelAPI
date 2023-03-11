@@ -5,8 +5,7 @@ import RxSwift
 // MARK: - List view model
 
 protocol ListViewModelProtocol {
-    var items: PublishRelay<[CharacterItem]> { get }
-    var images: PublishRelay<[Data]> { get }
+    var itemsRelay: PublishRelay<[CharacterItem]> { get }
     func textFieldReturned(name text: String?)
     func selected(at indexPath: IndexPath)
 }
@@ -22,17 +21,15 @@ final class ListViewModel: ListViewModelProtocol {
     // MARK: - Private properties
     
     private let bag = DisposeBag()
+    private var itemsStorage = [CharacterItem]() {
+        didSet {
+            itemsRelay.accept(itemsStorage)
+        }
+    }
 
     // MARK: - Public properties
     
-    var items = PublishRelay<[CharacterItem]>()
-    var images = PublishRelay<[Data]>()
-    
-    // MARK: - Lifecycle
-    
-    init() {
-        items.sub
-    }
+    var itemsRelay = PublishRelay<[CharacterItem]>()
     
     // MARK: - View input
     
@@ -51,17 +48,38 @@ final class ListViewModel: ListViewModelProtocol {
     // MARK: - Private methods
     
     private func requestForCharactersWith(name: String) {
-        networkService.getData(using: .getCharactersForName(name), completion: { result in
+        networkService.getData(using: .getCharactersForName(name)) { [weak self] result in
             switch result {
                 case .data(let marvelData):
                     if let result = marvelData.value as? [CharacterItem] {
-                        self.items.accept(result)
-                    } else {
-                        print("not implemented")
+                        self?.itemsStorage = result
                     }
                 case .error(let marvelError):
                     print(marvelError)
             }
-        })
+        }
+    }
+    
+    private func downloadItemImages() {
+        for index in 0..<itemsStorage.count {
+            loadImageDataForItem(at: index)
+        }
+    }
+    
+    private func loadImageDataForItem(at index: Int) {
+        networkService.getData(using: .getImageWith(url: itemsStorage[index].thumbnail.path,
+                                                    type: .small)) { [weak self] result in
+            switch result {
+                case .data(let data):
+                    if let imageData = data.value as? Data {
+                        print("IMG \(index) LOADED: \(imageData.debugDescription)")
+                        self?.itemsStorage[index].imageData = imageData
+                    } else {
+                        print("IMG \(index) DATA ERROR")
+                    }
+                case .error(let marvelError):
+                    print("IMG \(index) ERROR: \(marvelError)")
+            }
+        }
     }
 }
