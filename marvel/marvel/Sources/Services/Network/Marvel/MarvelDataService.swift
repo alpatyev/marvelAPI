@@ -1,6 +1,25 @@
 import Foundation
 import Alamofire
 
+enum NetworkError: Error {
+    case unableToComplete
+    case invalidUrl
+    case invalidData
+    case invalidDecoding
+}
+
+struct MainModel: Decodable {
+    let data: SecondModel
+}
+
+struct SecondModel: Decodable {
+    let results: [MarvelName]
+}
+
+struct MarvelName: Decodable {
+    let name: String
+}
+
 // MARK: - Marvel data service
 
 final class MarvelDataService {
@@ -11,20 +30,47 @@ final class MarvelDataService {
     
     // MARK: - Public methods
     
-    public func getData(using type: MarvelRequestType, completion: @escaping (MarvelResult) -> Void) {
+    func getData(using type: MarvelRequestType, completion: @escaping (Result<[MarvelName], NetworkError>) -> Void) {
         guard let url = builder.createURL(with: type) else {
-            return completion(.error(.url("Invalid url")))
+            //return completion(.error(.url("Invalid url")))
+            return completion(.failure(.invalidUrl))
         }
         
-        AF.request(url).response(completionHandler: { result in
-            DispatchQueue.main.async {
-                if let data = result.data {
-                    return completion(self.serialize(with: type, from: data))
-                } else {
-                    return completion(.error(.network("Data not recieved")))
-                }
+        let request = URLRequest(url: url)
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if error != nil {
+                completion(.failure(.unableToComplete))
+                return
             }
-        })
+            
+            // response
+            
+            guard let data = data else {
+                completion(.failure(.invalidData))
+                return
+            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(MainModel.self, from: data)
+                let results = decodedResponse.data
+                let result = results.results
+                completion(.success(result))
+            } catch {
+                completion(.failure(.invalidDecoding))
+                return
+            }
+            
+        }.resume()
+        
+//        AF.request(url).response { result in
+//            DispatchQueue.main.async {
+//                if let data = result.data {
+//                    return completion(self.serialize(with: type, from: data))
+//                } else {
+//                    return completion(.error(.network("Data not recieved")))
+//                }
+//            }
+//        }
     }
     
     // MARK: - Private methods
