@@ -63,10 +63,10 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             self.viewModel?.textFieldReturned(name: self.searchTextField.text)
         }.disposed(by: bag)
     
-        viewModel?.itemsRelay.asObservable()
+        viewModel?.items.asObservable()
             .bind(to: charactersList.rx
                     .items(cellIdentifier: MarvelCell.id, cellType: MarvelCell.self)) { _, item, cell in
-                cell.configure(with: item.name, item.imageData)
+                cell.configure(with: item.name)
         }.disposed(by: bag)
         
         charactersList.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in
@@ -77,6 +77,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     private func setupView() {
         view.backgroundColor = .black
+        print("loaded list view")
     }
     
     private func setupHierarchy() {

@@ -12,7 +12,6 @@ class MarvelCell: UITableViewCell {
     private lazy var icon: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = Constants.Colors.white
-        imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = Constants.Layout.defaultHeight * 0.75 * 0.9
         imageView.backgroundColor = Constants.Colors.hardTint
         return imageView
@@ -27,11 +26,12 @@ class MarvelCell: UITableViewCell {
     
     // MARK: - Configuration
     
-    public func configure(with text: String, _ data: Data? = nil) {
-        if let imageData = data {
-            icon.image = UIImage(data: imageData)
-        }
+    public func configure(with text: String) {
         nameLabel.text = text
+    }
+    
+    public func configure(with imageData: Data) {
+        icon.image = UIImage(data: imageData)
     }
     
     // MARK: - Lifecycle
