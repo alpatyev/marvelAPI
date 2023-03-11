@@ -14,7 +14,7 @@ enum Constants {
     
     enum Fonts {
         static let header = UIFont.boldSystemFont(ofSize: 24)
-        static let monospaced = UIFont.monospacedSystemFont(ofSize: 20, weight: .regular)
+        static let monospaced = UIFont.systemFont(ofSize: 20, weight: .semibold)
         static let monospacedDescriptopn = UIFont.systemFont(ofSize: 16, weight: .thin)
         static let subheader = UIFont.boldSystemFont(ofSize: 20)
     }

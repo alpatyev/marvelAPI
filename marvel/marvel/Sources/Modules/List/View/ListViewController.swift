@@ -77,7 +77,6 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     private func setupView() {
         view.backgroundColor = .black
-        print("loaded list view")
     }
     
     private func setupHierarchy() {

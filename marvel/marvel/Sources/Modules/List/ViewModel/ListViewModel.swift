@@ -53,6 +53,7 @@ final class ListViewModel: ListViewModelProtocol {
                 case .data(let marvelData):
                     if let result = marvelData.value as? [CharacterItem] {
                         self?.itemsStorage = result
+                        self?.downloadItemImages()
                     }
                 case .error(let marvelError):
                     print(marvelError)

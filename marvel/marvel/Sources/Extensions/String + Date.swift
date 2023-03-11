@@ -1,5 +1,5 @@
 import Foundation
-import CryptoKit
+import CommonCrypto
 
 // MARK: - Date with format
 
@@ -15,8 +15,14 @@ extension Date {
 
 extension String {
     func hashedUsingMD5() -> String {
-        let dataString = Data(self.utf8)
-        let hash = Insecure.MD5.hash(data: dataString)
-        return hash.map { String(format: "%02x", $0) }.joined()
+        let string = self.cString(using: String.Encoding.utf8)
+        let strLen = CUnsignedInt(self.lengthOfBytes(using: String.Encoding.utf8))
+        let digestLength = Int(CC_MD5_DIGEST_LENGTH)
+        let result = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: digestLength)
+        CC_MD5(string, strLen, result)
+        let hash = NSMutableString()
+        for i in 0..<digestLength { hash.appendFormat("%02x", result[i]) }
+        result.deallocate()
+        return String(format: hash as String)
     }
 }
