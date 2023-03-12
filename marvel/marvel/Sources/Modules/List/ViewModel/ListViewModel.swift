@@ -5,8 +5,10 @@ import RxSwift
 // MARK: - List view model
 
 protocol ListViewModelProtocol {
+    var loadingRelay: PublishRelay<Bool> { get }
     var messageRelay: PublishRelay<(String, String)> { get }
     var itemsRelay: PublishRelay<[CharacterItem]> { get }
+    
     func textFieldReturned(name text: String?)
     func selected(at indexPath: IndexPath)
 }
@@ -30,6 +32,7 @@ final class ListViewModel: ListViewModelProtocol {
 
     // MARK: - Public properties
     
+    var loadingRelay =  PublishRelay<Bool>()
     var messageRelay = PublishRelay<(String, String)>()
     var itemsRelay = PublishRelay<[CharacterItem]>()
     
@@ -40,17 +43,19 @@ final class ListViewModel: ListViewModelProtocol {
             messageRelay.accept(("Sorry...", "Please, type name of character."))
             return
         }
-        requestForCharactersWith(name: name)
+        requestForCharactersWith(name: name.trimmingCharacters(in: .whitespacesAndNewlines))
     }
     
     func selected(at indexPath: IndexPath) {
-        print("Selected at: \(indexPath.row)")
+        requestForCharacterWith(id: itemsStorage[indexPath.row].id)
     }
     
     // MARK: - Private methods
     
     private func requestForCharactersWith(name: String) {
+        loadingRelay.accept(true)
         networkService.getData(using: .getCharactersForName(name)) { [weak self] result in
+            defer { self?.loadingRelay.accept(false) }
             switch result {
                 case .data(let marvelData):
                     if let models = marvelData.value as? [CharacterItem] {
@@ -88,8 +93,16 @@ final class ListViewModel: ListViewModelProtocol {
     }
     
     private func requestForCharacterWith(id: Int) {
+        loadingRelay.accept(true)
         networkService.getData(using: .getCharacterForID(id)) { [weak self] result in
-            
+            defer { self?.loadingRelay.accept(false) }
+            switch result {
+                case .data(_):
+                    self?.messageRelay.accept(("Loaded!","Character for id \(id)"))
+                case .error(let marvelError):
+                    self?.messageRelay.accept(("Error ⛔️", marvelError.text))
+            }
         }
     }
+    
 }

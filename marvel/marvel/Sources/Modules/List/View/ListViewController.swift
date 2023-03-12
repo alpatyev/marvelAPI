@@ -45,6 +45,14 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         tableView.register(MarvelCell.self, forCellReuseIdentifier: MarvelCell.id)
         return tableView
     }()
+    
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.style = .whiteLarge
+        indicator.hidesWhenStopped = true
+        indicator.transform = CGAffineTransform.init(scaleX: 1.6, y: 1.6)
+        return indicator
+    }()
             
     // MARK: - Lifecycle
 
@@ -59,9 +67,13 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Setups
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
+    }
+    
     private func setupRx() {
-        searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { _ in
-            self.viewModel?.textFieldReturned(name: self.searchTextField.text)
+        searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { [weak self] next in
+            self?.viewModel?.textFieldReturned(name: self?.searchTextField.text)
         }.disposed(by: bag)
     
         viewModel?.itemsRelay.asObservable()
@@ -78,6 +90,9 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         viewModel?.messageRelay.asObservable().subscribe { [weak self] message in
             self?.statusMessage(message.element)
         }.disposed(by: bag)
+        
+        viewModel?.loadingRelay.asObservable()
+            .bind(to: loadingIndicator.rx.isAnimating).disposed(by: bag)
     }
     
     private func setupView() {
@@ -87,12 +102,14 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     private func setupHierarchy() {
         view.addSubview(searchTextField)
         view.addSubview(charactersList)
+        view.addSubview(loadingIndicator)
     }
     
     private func setupLayout() {
         searchTextField.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.left.right.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(Constants.Layout.indent)
+            make.left.equalToSuperview().offset(Constants.Layout.indent / 2)
+            make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
             make.height.equalTo(Constants.Layout.defaultHeight)
         }
         
@@ -101,6 +118,10 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             make.left.equalToSuperview().offset(Constants.Layout.indent / 2)
             make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
             make.bottom.equalToSuperview()
+        }
+        
+        loadingIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
     
@@ -114,8 +135,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
 
         var attributes = EKAttributes.bottomFloat
         attributes.entryBackground = .color(color: backgroundColor)
-        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 2), scale: .init(from: 1, to: 0.7, duration: 0.7)))
-        attributes.statusBar = .dark
+        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 4), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .easeOut)
         attributes.positionConstraints.verticalOffset = Constants.Layout.indent
         attributes.border = EKAttributes.Border.value(color: Constants.Colors.main,
@@ -133,6 +153,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
 
         let contentView = EKNotificationMessageView(with: notificationMessage)
         
+        SwiftEntryKit.dismiss(.all)
         SwiftEntryKit.display(entry: contentView, using: attributes)
     }
 }
