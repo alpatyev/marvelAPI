@@ -67,24 +67,37 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Setups
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        searchTextField.resignFirstResponder()
+        charactersList.isUserInteractionEnabled = true
+        charactersList.layer.opacity = 1
+    }
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
     
     private func setupRx() {
-        searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { [weak self] next in
+        searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { [weak self] _ in
             self?.viewModel?.textFieldReturned(name: self?.searchTextField.text)
+            self?.charactersList.isScrollEnabled = true
+            self?.charactersList.layer.opacity = 1
+        }.disposed(by: bag)
+        
+        searchTextField.rx.controlEvent([.editingDidBegin]).subscribe { [weak self] _ in
+            self?.charactersList.isUserInteractionEnabled = false
+            self?.charactersList.layer.opacity = 0.5
         }.disposed(by: bag)
     
         viewModel?.itemsRelay.asObservable()
-            .bind(to: charactersList.rx
-                    .items(cellIdentifier: MarvelCell.id, cellType: MarvelCell.self)) { _, item, cell in
+            .bind(to: charactersList.rx.items(cellIdentifier: MarvelCell.id,
+                                              cellType: MarvelCell.self)) { _, item, cell in
                 cell.configure(with: item.name, data: item.imageData)
         }.disposed(by: bag)
         
         charactersList.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in
-            self?.viewModel?.selected(at: indexPath)
             self?.charactersList.deselectRow(at: indexPath, animated: true)
+            self?.viewModel?.selected(at: indexPath)
         }).disposed(by: bag)
         
         viewModel?.messageRelay.asObservable().subscribe { [weak self] message in
@@ -93,6 +106,10 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         
         viewModel?.loadingRelay.asObservable()
             .bind(to: loadingIndicator.rx.isAnimating).disposed(by: bag)
+        
+        viewModel?.loadingRelay.asObservable().bind(onNext: { [weak self] isLoading in
+            self?.charactersList.layer.opacity = isLoading ? 0.5 : 1
+        }).disposed(by: bag)
     }
     
     private func setupView() {
