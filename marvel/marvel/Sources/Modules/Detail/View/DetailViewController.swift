@@ -18,6 +18,16 @@ final class DetailViewController: UIViewController {
     
     // MARK: - UI
     
+    private lazy var characterImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = Constants.Layout.cornerRadius
+        imageView.layer.borderWidth = Constants.Layout.borderWidth
+        imageView.layer.borderColor = Constants.Colors.main.cgColor
+        imageView.backgroundColor = Constants.Colors.hardTint
+        return imageView
+    }()
+    
     // MARK: - Configuration
     
     public func configure(with viewModel: DetailViewModelProtocol) {
@@ -42,19 +52,30 @@ final class DetailViewController: UIViewController {
     // MARK: - Setups
     
     private func setupRx() {
-        viewModel?.characterRelay.asObservable().subscribe { model in
-            print(model.element?.name ?? "? name")
-        }.disposed(by: bag)
+        viewModel?.characterSubject.subscribe({ [weak self] model in
+            self?.title = model.element?.name
+            guard let imageData = model.element?.imageData else { return }
+            self?.characterImage.image = UIImage(data: imageData)
+
+        }).disposed(by: bag)
     }
     
     private func setupView() {
-        view.backgroundColor = .black
+        view.backgroundColor = Constants.Colors.black
     }
     
     private func setupHierarchy() {
+        view.addSubview(characterImage)
     }
     
     private func setupLayout() {
-    
+        characterImage.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(Constants.Layout.defaultHeight)
+            make.left.equalToSuperview().offset(Constants.Layout.defaultHeight)
+            make.right.equalToSuperview().inset(Constants.Layout.defaultHeight)
+            make.height.equalTo(characterImage.snp.width)
+        }
     }
+    
+    // MARK: - Appearance methods
 }

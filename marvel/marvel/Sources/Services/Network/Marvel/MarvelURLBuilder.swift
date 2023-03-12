@@ -22,9 +22,6 @@ final class MarvelURLBuilder {
     
     public func createURL(with type: MarvelRequestType) -> URL? {
         switch type {
-            case .getComicsForCharacterName(let name):
-                components.path = "/v1/public/comics"
-                components.queryItems = [URLQueryItem(name: "characters", value: name)] + createTodayQuery()
             case .getCharactersForName(let name):
                 components.path = "/v1/public/characters"
                 components.queryItems = [URLQueryItem(name: "nameStartsWith", value: name)] + createTodayQuery()

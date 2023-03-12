@@ -91,13 +91,15 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupRx() {
-        searchTextField.rx.controlEvent([.editingDidEndOnExit]).subscribe { [weak self] _ in
+        searchTextField.rx.controlEvent([.editingDidEndOnExit])
+            .subscribe { [weak self] _ in
             self?.viewModel?.textFieldReturned(name: self?.searchTextField.text)
             self?.charactersList.isScrollEnabled = true
             self?.charactersList.layer.opacity = 1
         }.disposed(by: bag)
         
-        searchTextField.rx.controlEvent([.editingDidBegin]).subscribe { [weak self] _ in
+        searchTextField.rx.controlEvent([.editingDidBegin])
+            .subscribe { [weak self] _ in
             self?.charactersList.isUserInteractionEnabled = false
             self?.charactersList.layer.opacity = 0.5
         }.disposed(by: bag)
@@ -114,7 +116,6 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
                 self?.viewModel?.selected(at: indexPath)
                 self?.charactersList.deselectRow(at: indexPath, animated: true)
                 self?.charactersList.isHidden = true
-                print(indexPath)
             }).disposed(by: bag)
         
         charactersList.rx.itemSelected
@@ -123,14 +124,20 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
                 self?.charactersList.isHidden = false
             }).disposed(by: bag)
         
-        viewModel?.messageRelay.asObservable().subscribe { [weak self] message in
+        viewModel?.messageRelay
+            .asObservable()
+            .subscribe { [weak self] message in
             self?.statusMessage(message.element)
         }.disposed(by: bag)
         
-        viewModel?.loadingRelay.asObservable()
-            .bind(to: loadingIndicator.rx.isAnimating).disposed(by: bag)
+        viewModel?.loadingRelay
+            .asObservable()
+            .bind(to: loadingIndicator.rx.isAnimating)
+            .disposed(by: bag)
         
-        viewModel?.loadingRelay.asObservable().bind(onNext: { [weak self] isLoading in
+        viewModel?.loadingRelay
+            .asObservable()
+            .bind(onNext: { [weak self] isLoading in
             self?.charactersList.isUserInteractionEnabled = isLoading
             self?.charactersList.layer.opacity = isLoading ? 0.5 : 1
         }).disposed(by: bag)

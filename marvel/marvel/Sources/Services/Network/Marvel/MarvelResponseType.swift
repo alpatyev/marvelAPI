@@ -12,7 +12,6 @@ enum MarvelResult {
 enum MarvelData {
     case character(SpecificCharacterModel)
     case characterList([CharacterItem])
-    case comicsList([MarvelComics])
     case image(Data)
     
     var value: Any {
@@ -20,8 +19,6 @@ enum MarvelData {
             case .character(let marvelCharacter):
                 return marvelCharacter
             case .characterList(let list):
-                return list
-            case .comicsList(let list):
                 return list
             case .image(let data):
                 return data

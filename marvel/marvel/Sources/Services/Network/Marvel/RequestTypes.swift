@@ -3,7 +3,6 @@ import Foundation
 // MARK: - Request types
 
 enum MarvelRequestType {
-    case getComicsForCharacterName(String)
     case getCharactersForName(String)
     case getCharacterForID(Int)
     case getImageWith(url: String, type: MarvelImageType)

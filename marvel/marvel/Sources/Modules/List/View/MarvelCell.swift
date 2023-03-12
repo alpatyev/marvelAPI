@@ -11,7 +11,6 @@ class MarvelCell: UITableViewCell {
     
     private lazy var icon: UIImageView = {
         let imageView = UIImageView()
-        imageView.tintColor = Constants.Colors.white
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = Constants.Layout.defaultHeight * 0.75 * 0.9
         imageView.backgroundColor = Constants.Colors.hardTint

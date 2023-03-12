@@ -33,9 +33,6 @@ final class MarvelDataService {
         do {
             let decoder = JSONDecoder()
             switch type {
-                case .getComicsForCharacterName(_):
-                    let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<MarvelComics>>.self, from: data)
-                    return checkedForAmount(of: decoded, .data(.comicsList(decoded.data.results)))
                 case .getCharactersForName(_):
                     let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<CharacterItem>>.self, from: data)
                     return checkedForAmount(of: decoded, .data(.characterList(decoded.data.results)))

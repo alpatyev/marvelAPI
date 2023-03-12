@@ -27,7 +27,7 @@ final class ListViewModel: ListViewModelProtocol {
             itemsRelay.accept(itemsStorage)
         }
     }
-
+    
     // MARK: - Public properties
     
     var loadingRelay = PublishRelay<Bool>()
@@ -98,12 +98,13 @@ final class ListViewModel: ListViewModelProtocol {
     
     private func requestForCharacterWith(id: Int) {
         loadingRelay.accept(true)
+        let characterItem = self.itemsStorage.first { $0.id == id }
+        print("REQUEST FOR: \(characterItem?.name ?? "who")")
         networkService.getData(using: .getCharacterForID(id)) { [weak self] result in
             defer { self?.loadingRelay.accept(false) }
             switch result {
                 case .data(let data):
                     if let specificModel = data.value as? SpecificCharacterModel {
-                        let characterItem = self?.itemsStorage.first { $0.id == id }
                         self?.messageRelay.accept(("Loaded!","Character for id \(id)"))
                         self?.coordinator?.presentMarvelDetailScene(model: specificModel,
                                                                     preview: characterItem?.imageData)
