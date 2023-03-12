@@ -40,7 +40,7 @@ final class MarvelDataService {
                     let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<CharacterItem>>.self, from: data)
                     return checkedForAmount(of: decoded, .data(.characterList(decoded.data.results)))
                 case .getCharacterForID(_):
-                    let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<CharacterItem>>.self, from: data)
+                    let decoded = try decoder.decode(MarvelResponseModel<MarvelDataModel<SpecificCharacterModel>>.self, from: data)
                     if let character = decoded.data.results.first {
                         return .data(.character(character))
                     } else {

@@ -17,14 +17,11 @@ protocol ListViewModelProtocol {
 
 final class ListViewModel: ListViewModelProtocol {
     
-    // MARK: - Network service
-    
-    private let networkService = MarvelDataService()
-    
     // MARK: - Private properties
     
     private let bag = DisposeBag()
-    private weak var coordinator: ApplicationCoordinator?
+    private let networkService = MarvelDataService()
+    private var coordinator: ApplicationCoordinator?
     private var itemsStorage = [CharacterItem]() {
         didSet {
             itemsRelay.accept(itemsStorage)
@@ -104,9 +101,13 @@ final class ListViewModel: ListViewModelProtocol {
         networkService.getData(using: .getCharacterForID(id)) { [weak self] result in
             defer { self?.loadingRelay.accept(false) }
             switch result {
-                case .data(_):
-                    self?.messageRelay.accept(("Loaded!","Character for id \(id)"))
-                    self?.coordinator?.presentMarvelDetailScene()
+                case .data(let data):
+                    if let specificModel = data.value as? SpecificCharacterModel {
+                        let characterItem = self?.itemsStorage.first { $0.id == id }
+                        self?.messageRelay.accept(("Loaded!","Character for id \(id)"))
+                        self?.coordinator?.presentMarvelDetailScene(model: specificModel,
+                                                                    preview: characterItem?.imageData)
+                    }
                 case .error(let marvelError):
                     self?.messageRelay.accept(("Error ⛔️", marvelError.text))
             }

@@ -120,7 +120,6 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         charactersList.rx.itemSelected
             .debounce(.milliseconds(700), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
-                print(indexPath)
                 self?.charactersList.isHidden = false
             }).disposed(by: bag)
         

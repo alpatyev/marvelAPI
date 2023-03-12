@@ -12,6 +12,10 @@ final class DetailViewController: UIViewController {
     
     private var viewModel: DetailViewModelProtocol?
     
+    // MARK: - Private properties
+    
+    private let bag = DisposeBag()
+    
     // MARK: - UI
     
     // MARK: - Configuration
@@ -30,10 +34,17 @@ final class DetailViewController: UIViewController {
         setupLayout()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel?.viewAlreadyOnScreen()
+    }
+    
     // MARK: - Setups
     
     private func setupRx() {
-        
+        viewModel?.characterRelay.asObservable().subscribe { model in
+            print(model.element?.name ?? "? name")
+        }.disposed(by: bag)
     }
     
     private func setupView() {

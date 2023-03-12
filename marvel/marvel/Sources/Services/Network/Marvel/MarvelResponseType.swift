@@ -10,7 +10,7 @@ enum MarvelResult {
 // MARK: - Response types
 
 enum MarvelData {
-    case character(CharacterItem)
+    case character(SpecificCharacterModel)
     case characterList([CharacterItem])
     case comicsList([MarvelComics])
     case image(Data)
