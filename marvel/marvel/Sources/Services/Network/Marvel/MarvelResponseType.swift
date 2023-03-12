@@ -35,4 +35,15 @@ enum MarvelError: Error {
     case url(String)
     case network(String)
     case data(String)
+    
+    var text: String {
+        switch self {
+            case .url(_):
+                return "Something went wrong!"
+            case .network(let string):
+                return string
+            case .data(let string):
+                return string
+        }
+    }
 }

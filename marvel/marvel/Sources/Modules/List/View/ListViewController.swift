@@ -2,6 +2,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import SwiftEntryKit
 
 // MARK: - List view controller
 
@@ -44,7 +45,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         tableView.register(MarvelCell.self, forCellReuseIdentifier: MarvelCell.id)
         return tableView
     }()
-        
+            
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -73,6 +74,10 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             self?.viewModel?.selected(at: indexPath)
             self?.charactersList.deselectRow(at: indexPath, animated: true)
         }).disposed(by: bag)
+        
+        viewModel?.messageRelay.asObservable().subscribe { [weak self] message in
+            self?.statusMessage(message.element)
+        }.disposed(by: bag)
     }
     
     private func setupView() {
@@ -97,6 +102,38 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
             make.bottom.equalToSuperview()
         }
+    }
+    
+    // MARK: - Alerts and status messages
+    
+    private func statusMessage(_ text: (String, String)?) {
+        guard let message = text else { return }
+        
+        let backgroundColor = EKColor.init(Constants.Colors.white)
+        let mainColor = EKColor.init(Constants.Colors.main)
+
+        var attributes = EKAttributes.bottomFloat
+        attributes.entryBackground = .color(color: backgroundColor)
+        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 2), scale: .init(from: 1, to: 0.7, duration: 0.7)))
+        attributes.statusBar = .dark
+        attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .easeOut)
+        attributes.positionConstraints.verticalOffset = Constants.Layout.indent
+        attributes.border = EKAttributes.Border.value(color: Constants.Colors.main,
+                                                      width: Constants.Layout.borderWidth)
+
+        let title = EKProperty.LabelContent(text: message.0,
+                                                style: .init(font: Constants.Fonts.subheader,
+                                                             color: mainColor))
+        let description = EKProperty.LabelContent(text: message.1,
+                                                  style: .init(font: Constants.Fonts.subheader,
+                                                               color: mainColor))
+       
+        let simpleMessage = EKSimpleMessage(title: title, description: description)
+        let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
+
+        let contentView = EKNotificationMessageView(with: notificationMessage)
+        
+        SwiftEntryKit.display(entry: contentView, using: attributes)
     }
 }
 

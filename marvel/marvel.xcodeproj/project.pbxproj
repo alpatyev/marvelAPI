@@ -19,6 +19,7 @@
 		643363AF29BB7CAF00584EB3 /* ListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363AE29BB7CAF00584EB3 /* ListViewModel.swift */; };
 		643363B129BB80DF00584EB3 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363B029BB80DF00584EB3 /* Constants.swift */; };
 		643363B729BBAEAF00584EB3 /* MarvelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363B629BBAEAF00584EB3 /* MarvelCell.swift */; };
+		644EB68C29BDE3F400438B85 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 644EB68B29BDE3F400438B85 /* SwiftEntryKit */; };
 		648E6B4129BA3BED00BD0C20 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648E6B4029BA3BED00BD0C20 /* AppDelegate.swift */; };
 		648E6B4329BA3BED00BD0C20 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648E6B4229BA3BED00BD0C20 /* SceneDelegate.swift */; };
 		648E6B4A29BA3BF700BD0C20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 648E6B4929BA3BF700BD0C20 /* Assets.xcassets */; };
@@ -77,6 +78,7 @@
 			files = (
 				6492267C29BD4D5600A4C419 /* RxCocoa in Frameworks */,
 				64A9CA6A29BCEC7300F381D5 /* Alamofire in Frameworks */,
+				644EB68C29BDE3F400438B85 /* SwiftEntryKit in Frameworks */,
 				6492268029BD4D5600A4C419 /* RxSwift in Frameworks */,
 				6492267E29BD4D5600A4C419 /* RxRelay in Frameworks */,
 				64A9CA6029BCEC4B00F381D5 /* SnapKit in Frameworks */,
@@ -296,6 +298,7 @@
 				6492267B29BD4D5600A4C419 /* RxCocoa */,
 				6492267D29BD4D5600A4C419 /* RxRelay */,
 				6492267F29BD4D5600A4C419 /* RxSwift */,
+				644EB68B29BDE3F400438B85 /* SwiftEntryKit */,
 			);
 			productName = marvel;
 			productReference = 648E6B3D29BA3BEC00BD0C20 /* marvel.app */;
@@ -329,6 +332,7 @@
 				64A9CA5E29BCEC4B00F381D5 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				64A9CA6829BCEC7300F381D5 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				6492267A29BD4D5600A4C419 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				644EB68A29BDE3F300438B85 /* XCRemoteSwiftPackageReference "SwiftEntryKit" */,
 			);
 			productRefGroup = 648E6B3E29BA3BEC00BD0C20 /* Products */;
 			projectDirPath = "";
@@ -628,6 +632,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		644EB68A29BDE3F300438B85 /* XCRemoteSwiftPackageReference "SwiftEntryKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/huri000/SwiftEntryKit";
+			requirement = {
+				kind = exactVersion;
+				version = 2.0.0;
+			};
+		};
 		6492267A29BD4D5600A4C419 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveX/RxSwift";
@@ -655,6 +667,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		644EB68B29BDE3F400438B85 /* SwiftEntryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 644EB68A29BDE3F300438B85 /* XCRemoteSwiftPackageReference "SwiftEntryKit" */;
+			productName = SwiftEntryKit;
+		};
 		6492267B29BD4D5600A4C419 /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 6492267A29BD4D5600A4C419 /* XCRemoteSwiftPackageReference "RxSwift" */;

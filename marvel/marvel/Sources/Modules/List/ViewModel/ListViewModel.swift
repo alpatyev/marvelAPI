@@ -5,6 +5,7 @@ import RxSwift
 // MARK: - List view model
 
 protocol ListViewModelProtocol {
+    var messageRelay: PublishRelay<(String, String)> { get }
     var itemsRelay: PublishRelay<[CharacterItem]> { get }
     func textFieldReturned(name text: String?)
     func selected(at indexPath: IndexPath)
@@ -29,13 +30,14 @@ final class ListViewModel: ListViewModelProtocol {
 
     // MARK: - Public properties
     
+    var messageRelay = PublishRelay<(String, String)>()
     var itemsRelay = PublishRelay<[CharacterItem]>()
     
     // MARK: - View input
     
     func textFieldReturned(name text: String?) {
         guard let name = text, name != "" else {
-            print("pass name ")
+            messageRelay.accept(("Sorry...", "Please, type name of character."))
             return
         }
         requestForCharactersWith(name: name)
@@ -51,12 +53,13 @@ final class ListViewModel: ListViewModelProtocol {
         networkService.getData(using: .getCharactersForName(name)) { [weak self] result in
             switch result {
                 case .data(let marvelData):
-                    if let result = marvelData.value as? [CharacterItem] {
-                        self?.itemsStorage = result
+                    if let models = marvelData.value as? [CharacterItem] {
+                        self?.messageRelay.accept(("Look!", "There are \(models.count) characters."))
+                        self?.itemsStorage = models
                         self?.downloadItemImages()
                     }
                 case .error(let marvelError):
-                    print(marvelError)
+                    self?.messageRelay.accept(("Error ⛔️", marvelError.text))
             }
         }
     }
@@ -79,8 +82,14 @@ final class ListViewModel: ListViewModelProtocol {
                         print("IMG \(index) DATA ERROR")
                     }
                 case .error(let marvelError):
-                    print("IMG \(index) ERROR: \(marvelError)")
+                    print("IMG \(index) ERROR: \(marvelError.localizedDescription)")
             }
+        }
+    }
+    
+    private func requestForCharacterWith(id: Int) {
+        networkService.getData(using: .getCharacterForID(id)) { [weak self] result in
+            
         }
     }
 }
