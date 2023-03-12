@@ -24,6 +24,7 @@ final class ListViewModel: ListViewModelProtocol {
     // MARK: - Private properties
     
     private let bag = DisposeBag()
+    private weak var coordinator: ApplicationCoordinator?
     private var itemsStorage = [CharacterItem]() {
         didSet {
             itemsRelay.accept(itemsStorage)
@@ -32,9 +33,15 @@ final class ListViewModel: ListViewModelProtocol {
 
     // MARK: - Public properties
     
-    var loadingRelay =  PublishRelay<Bool>()
+    var loadingRelay = PublishRelay<Bool>()
     var messageRelay = PublishRelay<(String, String)>()
     var itemsRelay = PublishRelay<[CharacterItem]>()
+    
+    // MARK: - Configuration
+    
+    public func configure(with coordinator: ApplicationCoordinator) {
+        self.coordinator = coordinator
+    }
     
     // MARK: - View input
     
@@ -99,10 +106,10 @@ final class ListViewModel: ListViewModelProtocol {
             switch result {
                 case .data(_):
                     self?.messageRelay.accept(("Loaded!","Character for id \(id)"))
+                    self?.coordinator?.presentMarvelDetailScene()
                 case .error(let marvelError):
                     self?.messageRelay.accept(("Error ⛔️", marvelError.text))
             }
         }
     }
-    
 }

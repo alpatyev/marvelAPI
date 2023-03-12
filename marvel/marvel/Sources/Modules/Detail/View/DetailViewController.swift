@@ -1,4 +1,8 @@
 import UIKit
+import SnapKit
+import RxSwift
+import RxCocoa
+import SwiftEntryKit
 
 // MARK: - Detail view controller
 
@@ -6,9 +10,15 @@ final class DetailViewController: UIViewController {
     
     // MARK: - View model
     
-    private let viewModel: ListViewModelProtocol? = nil
+    private var viewModel: DetailViewModelProtocol?
     
     // MARK: - UI
+    
+    // MARK: - Configuration
+    
+    public func configure(with viewModel: DetailViewModelProtocol) {
+        self.viewModel = viewModel
+    }
     
     // MARK: - Lifecycle
 
@@ -28,7 +38,6 @@ final class DetailViewController: UIViewController {
     
     private func setupView() {
         view.backgroundColor = .black
-        print("loaded detail view")
     }
     
     private func setupHierarchy() {

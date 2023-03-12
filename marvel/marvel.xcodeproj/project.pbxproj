@@ -31,7 +31,7 @@
 		6492268029BD4D5600A4C419 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6492267F29BD4D5600A4C419 /* RxSwift */; };
 		64A9CA6029BCEC4B00F381D5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 64A9CA5F29BCEC4B00F381D5 /* SnapKit */; };
 		64A9CA6A29BCEC7300F381D5 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 64A9CA6929BCEC7300F381D5 /* Alamofire */; };
-		64F8561729BD34DF0014AA06 /* MainRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F8561629BD34DF0014AA06 /* MainRouter.swift */; };
+		64F8561729BD34DF0014AA06 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F8561629BD34DF0014AA06 /* MainCoordinator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,7 +68,7 @@
 		648E6B4E29BA3BF700BD0C20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		648E6B6229BA3EAB00BD0C20 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		648E6B6429BA3EB900BD0C20 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
-		64F8561629BD34DF0014AA06 /* MainRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainRouter.swift; sourceTree = "<group>"; };
+		64F8561629BD34DF0014AA06 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -262,17 +262,17 @@
 		64F8561429BD34A70014AA06 /* Routing */ = {
 			isa = PBXGroup;
 			children = (
-				64F8561529BD34C70014AA06 /* MainRouter */,
+				64F8561529BD34C70014AA06 /* MainCoordinator */,
 			);
 			path = Routing;
 			sourceTree = "<group>";
 		};
-		64F8561529BD34C70014AA06 /* MainRouter */ = {
+		64F8561529BD34C70014AA06 /* MainCoordinator */ = {
 			isa = PBXGroup;
 			children = (
-				64F8561629BD34DF0014AA06 /* MainRouter.swift */,
+				64F8561629BD34DF0014AA06 /* MainCoordinator.swift */,
 			);
-			path = MainRouter;
+			path = MainCoordinator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -363,7 +363,7 @@
 				643363A729BB565000584EB3 /* MarvelDataModels.swift in Sources */,
 				6433639F29BA5D0900584EB3 /* MarvelURLBuilder.swift in Sources */,
 				643363B729BBAEAF00584EB3 /* MarvelCell.swift in Sources */,
-				64F8561729BD34DF0014AA06 /* MainRouter.swift in Sources */,
+				64F8561729BD34DF0014AA06 /* MainCoordinator.swift in Sources */,
 				643363AF29BB7CAF00584EB3 /* ListViewModel.swift in Sources */,
 				648E6B4129BA3BED00BD0C20 /* AppDelegate.swift in Sources */,
 				643363AB29BB7C3D00584EB3 /* ComicsModel.swift in Sources */,

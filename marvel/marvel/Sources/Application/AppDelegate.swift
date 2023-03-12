@@ -4,11 +4,18 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    var applicationCoordinator: ApplicationCoordinator?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        let rootController = UINavigationController()
+        applicationCoordinator = ApplicationCoordinator(rootController)
+        applicationCoordinator?.start()
+        
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = ListViewController()
+        window?.rootViewController = rootController
         window?.makeKeyAndVisible()
+        
         return true
     }
 }

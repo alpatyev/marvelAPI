@@ -53,16 +53,26 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         indicator.transform = CGAffineTransform.init(scaleX: 1.6, y: 1.6)
         return indicator
     }()
+    
+    // MARK: - Configuration
+    
+    public func configure(with viewModel: ListViewModelProtocol) {
+        self.viewModel = viewModel
+    }
             
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = ListViewModel()
         setupRx()
         setupView()
         setupHierarchy()
         setupLayout()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupNavigationController()
     }
     
     // MARK: - Setups
@@ -73,8 +83,11 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         charactersList.layer.opacity = 1
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        .lightContent
+    private func setupNavigationController() {
+        navigationController?.navigationBar.barStyle = .black
+        navigationController?.navigationBar.barTintColor = Constants.Colors.black
+        navigationController?.navigationBar.tintColor = Constants.Colors.main
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor : Constants.Colors.main]
     }
     
     private func setupRx() {
@@ -90,15 +103,26 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         }.disposed(by: bag)
     
         viewModel?.itemsRelay.asObservable()
-            .bind(to: charactersList.rx.items(cellIdentifier: MarvelCell.id,
-                                              cellType: MarvelCell.self)) { _, item, cell in
+            .bind(to: charactersList.rx
+                    .items(cellIdentifier: MarvelCell.id,
+                           cellType: MarvelCell.self)) { _, item, cell in
                 cell.configure(with: item.name, data: item.imageData)
-        }.disposed(by: bag)
+            }.disposed(by: bag)
+    
+        charactersList.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                self?.viewModel?.selected(at: indexPath)
+                self?.charactersList.deselectRow(at: indexPath, animated: true)
+                self?.charactersList.isHidden = true
+                print(indexPath)
+            }).disposed(by: bag)
         
-        charactersList.rx.itemSelected.subscribe(onNext: { [weak self] indexPath in
-            self?.charactersList.deselectRow(at: indexPath, animated: true)
-            self?.viewModel?.selected(at: indexPath)
-        }).disposed(by: bag)
+        charactersList.rx.itemSelected
+            .debounce(.milliseconds(700), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] indexPath in
+                print(indexPath)
+                self?.charactersList.isHidden = false
+            }).disposed(by: bag)
         
         viewModel?.messageRelay.asObservable().subscribe { [weak self] message in
             self?.statusMessage(message.element)
@@ -108,11 +132,13 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             .bind(to: loadingIndicator.rx.isAnimating).disposed(by: bag)
         
         viewModel?.loadingRelay.asObservable().bind(onNext: { [weak self] isLoading in
+            self?.charactersList.isUserInteractionEnabled = isLoading
             self?.charactersList.layer.opacity = isLoading ? 0.5 : 1
         }).disposed(by: bag)
     }
     
     private func setupView() {
+        title = "Search"
         view.backgroundColor = .black
     }
     
