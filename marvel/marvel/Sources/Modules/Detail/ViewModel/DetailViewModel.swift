@@ -7,9 +7,11 @@ import RxRelay
 
 protocol DetailViewModelProtocol {
     var characterSubject: ReplaySubject<SpecificCharacterModel> { get }
-    var messageRelay: PublishRelay<String> { get }
+    var propertiesMessageRelay: PublishRelay<[String]> { get }
+    var propertiesRelay: PublishRelay<String> { get }
 
     func viewAlreadyOnScreen()
+    func selectedProperty(at index: Int)
 }
 
 // MARK: - Detail view model
@@ -19,7 +21,8 @@ final class DetailViewModel: DetailViewModelProtocol {
     // MARK: - Public properties
     
     var characterSubject = ReplaySubject<SpecificCharacterModel>.create(bufferSize: 1)
-    var messageRelay = PublishRelay<String>()
+    var propertiesMessageRelay = PublishRelay<[String]>()
+    var propertiesRelay = PublishRelay<String>()
     
     // MARK: - Private properties
     
@@ -32,6 +35,14 @@ final class DetailViewModel: DetailViewModelProtocol {
                 characterSubject.onNext(model)
             }
         }
+    }
+    
+    // MARK: - Setup on lifecycle
+    
+    init() {
+        characterSubject.asObservable().subscribe { [weak self] event in
+           // when
+        }.disposed(by: bag)
     }
 
     // MARK: - Configuration
@@ -60,5 +71,9 @@ final class DetailViewModel: DetailViewModelProtocol {
                     print(error.text)
             }
         }
+    }
+    
+    func selectedProperty(at index: Int) {
+        print(index)
     }
 }

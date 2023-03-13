@@ -2,10 +2,11 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import SwiftEntryKit
 
 // MARK: - Detail view controller
 
-final class DetailViewController: UIViewController {
+final class DetailViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - View model
     
@@ -14,6 +15,7 @@ final class DetailViewController: UIViewController {
     // MARK: - Private properties
     
     private let bag = DisposeBag()
+    private let selectedIndex = PublishRelay<Int>()
     
     // MARK: - UI
     
@@ -21,8 +23,9 @@ final class DetailViewController: UIViewController {
         let scrollView = UIScrollView()
         scrollView.isScrollEnabled = true
         scrollView.bounces = true
-        scrollView.contentSize = CGSize(width: view.frame.size.width * 0.9,
+        scrollView.contentSize = CGSize(width: view.frame.size.width,
                                         height: 1000)
+        scrollView.showsVerticalScrollIndicator = false
         return scrollView
     }()
         
@@ -43,6 +46,14 @@ final class DetailViewController: UIViewController {
         label.textAlignment = .center
         label.makeTextColorGradient()
         return label
+    }()
+    
+    
+    private lazy var propertiesButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = Constants.Colors.hardTint
+        button.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+        return button
     }()
     
     // MARK: - Configuration
@@ -79,6 +90,8 @@ final class DetailViewController: UIViewController {
                 self?.characterImage.image = UIImage(named: "default")
             }
         }).disposed(by: bag)
+        
+        
     }
     
     private func setupView() {
@@ -89,14 +102,14 @@ final class DetailViewController: UIViewController {
         view.addSubview(scrollContentView)
         scrollContentView.addSubview(characterImage)
         scrollContentView.addSubview(nameLabel)
+        scrollContentView.addSubview(propertiesButton)
     }
     
     private func setupLayout() {
         scrollContentView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.centerX.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.9)
-            make.height.equalToSuperview()
+            make.width.height.equalToSuperview()
         }
         
         characterImage.snp.makeConstraints { make in
@@ -112,7 +125,62 @@ final class DetailViewController: UIViewController {
             make.width.equalToSuperview().multipliedBy(0.9)
             make.height.equalTo(Constants.Layout.defaultHeight)
         }
+        
+        propertiesButton.snp.makeConstraints { make in
+            make.top.equalTo(nameLabel.snp.bottom).offset(Constants.Layout.indent)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.9)
+            make.height.equalTo(Constants.Layout.defaultHeight)
+        }
     }
     
-    // MARK: - Appearance methods
+    // MARK: - Selectable property alert
+
+    @objc private func tapped() {
+        statusMessage([String]())
+    }
+    
+    
+    let backgroundColor = EKColor.init(Constants.Colors.black.withAlphaComponent(0.5))
+    let mainColor = EKColor.init(Constants.Colors.main)
+    
+    private func statusMessage(_ source: [String]?) {
+        guard let _ = source else { return }
+        
+        var attributes = EKAttributes.bottomNote
+        attributes.entryInteraction = .absorbTouches
+        attributes.entryBackground = .color(color: backgroundColor)
+        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 10), scale: .init(from: 1, to: 0.7, duration: 0.7)))
+        attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .easeOut)
+        attributes.positionConstraints.verticalOffset = Constants.Layout.indent
+        attributes.border = EKAttributes.Border.value(color: Constants.Colors.main,
+                                                      width: Constants.Layout.borderWidth)
+        
+        showAlertView(attributes: attributes)
+    
+    }
+    
+    private func showAlertView(attributes: EKAttributes) {
+        
+        // Ok Button
+        let okButtonLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 12), color: mainColor)
+        let okButtonLabel = EKProperty.LabelContent(text: "OK, ACCEPT", style: okButtonLabelStyle)
+        let okButton = EKProperty.ButtonContent(label: okButtonLabel, backgroundColor: .clear, highlightedBackgroundColor:  mainColor) {
+            SwiftEntryKit.dismiss {
+                print("okButton")
+            }
+
+        }
+
+        let buttonsBarContent = EKProperty.ButtonBarContent(
+            with: okButton, okButton,
+            separatorColor: mainColor,
+            displayMode: .dark,
+            expandAnimatedly: true
+        )
+        let alertMessage = EKAlertMessage(simpleMessage: EKSimpleMessage(title: okButtonLabel,
+                                                                         description: okButtonLabel), buttonBarContent: buttonsBarContent)
+        let contentView = EKAlertMessageView(with: alertMessage)
+        SwiftEntryKit.display(entry: contentView, using: attributes)
+    }
 }
