@@ -2,7 +2,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import SwiftEntryKit
 
 // MARK: - Detail view controller
 
@@ -18,6 +17,15 @@ final class DetailViewController: UIViewController {
     
     // MARK: - UI
     
+    private lazy var scrollContentView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.isScrollEnabled = true
+        scrollView.bounces = true
+        scrollView.contentSize = CGSize(width: view.frame.size.width * 0.9,
+                                        height: 1000)
+        return scrollView
+    }()
+        
     private lazy var characterImage: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.masksToBounds = true
@@ -27,6 +35,16 @@ final class DetailViewController: UIViewController {
         imageView.backgroundColor = Constants.Colors.hardTint
         return imageView
     }()
+    
+    private lazy var nameLabel: GradientLabel = {
+        let label = GradientLabel()
+        label.font = .boldSystemFont(ofSize: 36)
+        label.adjustsFontSizeToFitWidth = true
+        label.textAlignment = .center
+        label.makeTextColorGradient()
+        return label
+    }()
+    
     
     // MARK: - Configuration
     
@@ -54,9 +72,13 @@ final class DetailViewController: UIViewController {
     private func setupRx() {
         viewModel?.characterSubject.subscribe({ [weak self] model in
             self?.title = model.element?.name
-            guard let imageData = model.element?.imageData else { return }
-            self?.characterImage.image = UIImage(data: imageData)
-
+            self?.nameLabel.text = model.element?.name
+            
+            if let imageData = model.element?.imageData {
+                self?.characterImage.image = UIImage(data: imageData)
+            } else {
+                self?.characterImage.image = UIImage(named: "default")
+            }
         }).disposed(by: bag)
     }
     
@@ -65,15 +87,31 @@ final class DetailViewController: UIViewController {
     }
     
     private func setupHierarchy() {
-        view.addSubview(characterImage)
+        view.addSubview(scrollContentView)
+        scrollContentView.addSubview(characterImage)
+        scrollContentView.addSubview(nameLabel)
     }
     
     private func setupLayout() {
+        scrollContentView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.9)
+            make.height.equalToSuperview()
+        }
+        
         characterImage.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(Constants.Layout.defaultHeight)
-            make.left.equalToSuperview().offset(Constants.Layout.defaultHeight)
-            make.right.equalToSuperview().inset(Constants.Layout.defaultHeight)
+            make.top.equalToSuperview().offset(Constants.Layout.indent)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.9)
             make.height.equalTo(characterImage.snp.width)
+        }
+        
+        nameLabel.snp.makeConstraints { make in
+            make.top.equalTo(characterImage.snp.bottom).offset(Constants.Layout.indent)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.9)
+            make.height.equalTo(Constants.Layout.defaultHeight)
         }
     }
     

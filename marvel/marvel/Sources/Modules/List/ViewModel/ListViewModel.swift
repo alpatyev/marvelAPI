@@ -11,6 +11,7 @@ protocol ListViewModelProtocol {
     
     func textFieldReturned(name text: String?)
     func selected(at indexPath: IndexPath)
+    func viewOnScreen()
 }
 
 // MARK: - List view model
@@ -54,6 +55,20 @@ final class ListViewModel: ListViewModelProtocol {
         requestForCharacterWith(id: itemsStorage[indexPath.row].id)
     }
     
+    func viewOnScreen() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            if let name = self?.itemsStorage.randomElement()?.name {
+                if Int.random(in: 1...10) % 3 == 0 {
+                    self?.messageRelay.accept(("Check it out!",
+                                               "We have \(name) ⭐️"))
+                }
+            } else {
+                self?.messageRelay.accept(("Welcome 👋",
+                                           "You can find characters for specific name."))
+            }
+        }
+    }
+    
     // MARK: - Private methods
     
     private func requestForCharactersWith(name: String) {
@@ -63,7 +78,7 @@ final class ListViewModel: ListViewModelProtocol {
             switch result {
                 case .data(let marvelData):
                     if let models = marvelData.value as? [CharacterItem] {
-                        self?.messageRelay.accept(("Look!", "There are \(models.count) characters."))
+                        self?.messageRelay.accept(("Look! 👀", "There are \(models.count) characters."))
                         self?.itemsStorage = models
                         self?.downloadItemImages()
                     }
@@ -105,7 +120,7 @@ final class ListViewModel: ListViewModelProtocol {
             switch result {
                 case .data(let data):
                     if let specificModel = data.value as? SpecificCharacterModel {
-                        self?.messageRelay.accept(("Loaded!","Character for id \(id)"))
+                        self?.messageRelay.accept(("Loaded!","Character with ID: \(id)"))
                         self?.coordinator?.presentMarvelDetailScene(model: specificModel,
                                                                     preview: characterItem?.imageData)
                     }

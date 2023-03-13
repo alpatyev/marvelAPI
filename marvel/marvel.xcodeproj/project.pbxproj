@@ -20,6 +20,7 @@
 		643363B129BB80DF00584EB3 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363B029BB80DF00584EB3 /* Constants.swift */; };
 		643363B729BBAEAF00584EB3 /* MarvelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643363B629BBAEAF00584EB3 /* MarvelCell.swift */; };
 		644EB68C29BDE3F400438B85 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = 644EB68B29BDE3F400438B85 /* SwiftEntryKit */; };
+		644EB69229BEA83000438B85 /* GradientLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 644EB69129BEA83000438B85 /* GradientLabel.swift */; };
 		648E6B4129BA3BED00BD0C20 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648E6B4029BA3BED00BD0C20 /* AppDelegate.swift */; };
 		648E6B4329BA3BED00BD0C20 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648E6B4229BA3BED00BD0C20 /* SceneDelegate.swift */; };
 		648E6B4A29BA3BF700BD0C20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 648E6B4929BA3BF700BD0C20 /* Assets.xcassets */; };
@@ -60,6 +61,7 @@
 		643363AE29BB7CAF00584EB3 /* ListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewModel.swift; sourceTree = "<group>"; };
 		643363B029BB80DF00584EB3 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		643363B629BBAEAF00584EB3 /* MarvelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarvelCell.swift; sourceTree = "<group>"; };
+		644EB69129BEA83000438B85 /* GradientLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientLabel.swift; sourceTree = "<group>"; };
 		648E6B3D29BA3BEC00BD0C20 /* marvel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = marvel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		648E6B4029BA3BED00BD0C20 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		648E6B4229BA3BED00BD0C20 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 			isa = PBXGroup;
 			children = (
 				648E6B6429BA3EB900BD0C20 /* DetailViewController.swift */,
+				644EB69129BEA83000438B85 /* GradientLabel.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -370,6 +373,7 @@
 				643363B129BB80DF00584EB3 /* Constants.swift in Sources */,
 				648E6B4329BA3BED00BD0C20 /* SceneDelegate.swift in Sources */,
 				643363A929BB6A2700584EB3 /* CharacterModel.swift in Sources */,
+				644EB69229BEA83000438B85 /* GradientLabel.swift in Sources */,
 				648E6B6329BA3EAB00BD0C20 /* ListViewController.swift in Sources */,
 				643363A129BA5D4000584EB3 /* MarvelResponseType.swift in Sources */,
 				643363A329BA6AB100584EB3 /* String + Date.swift in Sources */,

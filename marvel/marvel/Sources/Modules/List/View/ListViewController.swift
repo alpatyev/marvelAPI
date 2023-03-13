@@ -75,6 +75,11 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         setupNavigationController()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel?.viewOnScreen()
+    }
+    
     // MARK: - Setups
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
