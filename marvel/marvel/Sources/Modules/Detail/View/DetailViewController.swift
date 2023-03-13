@@ -45,7 +45,6 @@ final class DetailViewController: UIViewController {
         return label
     }()
     
-    
     // MARK: - Configuration
     
     public func configure(with viewModel: DetailViewModelProtocol) {
