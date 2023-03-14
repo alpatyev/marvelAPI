@@ -5,7 +5,7 @@ import UIKit
 
 final class GradientButton: UIButton {
     
-    let gradientColors : [UIColor]
+    var gradientColors : [UIColor]
     let startPoint : CGPoint
     let endPoint : CGPoint
     
@@ -15,8 +15,8 @@ final class GradientButton: UIButton {
         self.gradientColors = gradientColors
         self.startPoint = startPoint
         self.endPoint = endPoint
-        
         super.init(frame: .zero)
+        makeTextColorGradient()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -51,6 +51,19 @@ final class GradientButton: UIButton {
         layer.shadowOffset = CGSize(width: 0.0, height: 1.0)
         layer.shadowOpacity = 0.85
         layer.shadowRadius = 4.0
+    }
+    
+    func makeTextColorGradient() {
+        let baseColors = [UIColor.red,
+                          UIColor.blue,
+                          UIColor.purple]
+        
+        var pattern = [UIColor]()
+        for _ in 0...Int.random(in: 2...5) {
+            pattern.append(baseColors.randomElement() ?? UIColor.red)
+        }
+        
+        gradientColors = pattern
     }
     
     override var isHighlighted: Bool {

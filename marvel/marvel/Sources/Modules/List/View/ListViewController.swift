@@ -69,6 +69,12 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         setupView()
         setupHierarchy()
         setupLayout()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3,
+                                      execute: { [weak self] in
+            let random = "abcdefghijklmnopqrstuvwxyz".randomElement() ?? "s"
+            self?.viewModel?.textFieldReturned(name: String(random))
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -151,9 +157,8 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupView() {
-        title = "Search"
+        title = "🔍"
         let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
-        backgroundImage.layer.opacity = 0.6
         backgroundImage.image = UIImage(named: "stars")
         backgroundImage.contentMode = .scaleAspectFill
         self.view.insertSubview(backgroundImage, at: 0)

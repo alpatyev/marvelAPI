@@ -14,7 +14,7 @@ class GradientLabel: UILabel {
         super.drawText(in: rect)
     }
     
-    public func makeTextColorGradient() {
+    func makeTextColorGradient() {
         let baseColors = [UIColor.red.cgColor,
                           UIColor.blue.cgColor,
                           UIColor.purple.cgColor]
@@ -28,7 +28,7 @@ class GradientLabel: UILabel {
     }
 
     
-    private func drawGradientColor(in rect: CGRect, colors: [CGColor]) -> UIColor? {
+    func drawGradientColor(in rect: CGRect, colors: [CGColor]) -> UIColor? {
         let currentContext = UIGraphicsGetCurrentContext()
         currentContext?.saveGState()
         defer { currentContext?.restoreGState() }
@@ -49,24 +49,5 @@ class GradientLabel: UILabel {
         
         guard let image = gradientImage else { return nil }
         return UIColor(patternImage: image)
-    }
-}
-
-extension UIImage {
-    static func animatedGif(named: String, framesPerSecond: Double = 10) -> UIImage? {
-        guard let asset = NSDataAsset(name: named) else { return nil }
-        return animatedGif(from: asset.data, framesPerSecond: framesPerSecond)
-    }
-
-    static func animatedGif(from data: Data, framesPerSecond: Double = 10) -> UIImage? {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
-        let imageCount = CGImageSourceGetCount(source)
-        var images: [UIImage] = []
-        for i in 0 ..< imageCount {
-            if let cgImage = CGImageSourceCreateImageAtIndex(source, i, nil) {
-                images.append(UIImage(cgImage: cgImage))
-            }
-        }
-        return UIImage.animatedImage(with: images, duration: Double(images.count) / framesPerSecond)
     }
 }
