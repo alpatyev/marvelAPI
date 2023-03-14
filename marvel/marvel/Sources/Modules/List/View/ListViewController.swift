@@ -4,6 +4,7 @@ import RxSwift
 import RxCocoa
 import SwiftEntryKit
 
+
 // MARK: - List view controller
 
 final class ListViewController: UIViewController, UIScrollViewDelegate {
@@ -40,17 +41,17 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     private lazy var charactersList: UITableView = {
         let tableView = UITableView()
         tableView.separatorStyle = .none
-        tableView.backgroundColor = Constants.Colors.black
         tableView.rx.setDelegate(self).disposed(by: bag)
+        tableView.backgroundColor = .clear
         tableView.register(MarvelCell.self, forCellReuseIdentifier: MarvelCell.id)
         return tableView
     }()
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
-        indicator.style = .whiteLarge
+        indicator.style = .white
         indicator.hidesWhenStopped = true
-        indicator.transform = CGAffineTransform.init(scaleX: 1.6, y: 1.6)
+        indicator.transform = CGAffineTransform.init(scaleX: 2, y: 2)
         return indicator
     }()
     
@@ -78,6 +79,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel?.viewOnScreen()
+        SwiftEntryKit.dismiss(.all)
     }
     
     // MARK: - Setups
@@ -98,16 +100,16 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     private func setupRx() {
         searchTextField.rx.controlEvent([.editingDidEndOnExit])
             .subscribe { [weak self] _ in
-            self?.viewModel?.textFieldReturned(name: self?.searchTextField.text)
-            self?.charactersList.isScrollEnabled = true
-            self?.charactersList.layer.opacity = 1
-        }.disposed(by: bag)
+                self?.viewModel?.textFieldReturned(name: self?.searchTextField.text)
+                self?.charactersList.isScrollEnabled = true
+                self?.charactersList.layer.opacity = 1
+            }.disposed(by: bag)
         
         searchTextField.rx.controlEvent([.editingDidBegin])
             .subscribe { [weak self] _ in
-            self?.charactersList.isUserInteractionEnabled = false
-            self?.charactersList.layer.opacity = 0.5
-        }.disposed(by: bag)
+                self?.charactersList.isUserInteractionEnabled = false
+                self?.charactersList.layer.opacity = 0.5
+            }.disposed(by: bag)
     
         viewModel?.itemsRelay.asObservable()
             .bind(to: charactersList.rx
@@ -115,7 +117,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
                            cellType: MarvelCell.self)) { _, item, cell in
                 cell.configure(with: item.name, data: item.imageData)
             }.disposed(by: bag)
-    
+        
         charactersList.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 self?.viewModel?.selected(at: indexPath)
@@ -132,8 +134,8 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         viewModel?.messageRelay
             .asObservable()
             .subscribe { [weak self] message in
-            self?.statusMessage(message.element)
-        }.disposed(by: bag)
+                self?.statusMessage(message.element)
+            }.disposed(by: bag)
         
         viewModel?.loadingRelay
             .asObservable()
@@ -143,14 +145,18 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         viewModel?.loadingRelay
             .asObservable()
             .bind(onNext: { [weak self] isLoading in
-            self?.charactersList.isUserInteractionEnabled = isLoading
-            self?.charactersList.layer.opacity = isLoading ? 0.5 : 1
-        }).disposed(by: bag)
+                self?.charactersList.isUserInteractionEnabled = isLoading
+                self?.charactersList.layer.opacity = isLoading ? 0.5 : 1
+            }).disposed(by: bag)
     }
     
     private func setupView() {
         title = "Search"
-        view.backgroundColor = .black
+        let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
+        backgroundImage.layer.opacity = 0.6
+        backgroundImage.image = UIImage(named: "stars")
+        backgroundImage.contentMode = .scaleAspectFill
+        self.view.insertSubview(backgroundImage, at: 0)
     }
     
     private func setupHierarchy() {
@@ -173,7 +179,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
             make.right.equalToSuperview().inset(Constants.Layout.indent / 2)
             make.bottom.equalToSuperview()
         }
-        
+    
         loadingIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }

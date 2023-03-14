@@ -11,6 +11,7 @@ protocol DetailViewModelProtocol {
     var propertiesRelay: PublishRelay<String> { get }
 
     func viewAlreadyOnScreen()
+    func menuButtonTapped()
     func selectedProperty(at index: Int)
 }
 
@@ -29,20 +30,13 @@ final class DetailViewModel: DetailViewModelProtocol {
     private let bag = DisposeBag()
     private let networkService = MarvelDataService()
     private var coordinator: ApplicationCoordinator?
+    private var characterInfo: CharacterInfo?
     private var characterModel: SpecificCharacterModel? {
         didSet {
             if let model = characterModel {
                 characterSubject.onNext(model)
             }
         }
-    }
-    
-    // MARK: - Setup on lifecycle
-    
-    init() {
-        characterSubject.asObservable().subscribe { [weak self] event in
-           // when
-        }.disposed(by: bag)
     }
 
     // MARK: - Configuration
@@ -51,6 +45,7 @@ final class DetailViewModel: DetailViewModelProtocol {
         var detailedModel = model
         detailedModel.imageData = preview
         characterModel = detailedModel
+        characterInfo = CharacterInfo(using: detailedModel)
     }
     
     // MARK: - View input
@@ -62,6 +57,7 @@ final class DetailViewModel: DetailViewModelProtocol {
         
         networkService.getData(using: .getImageWith(url: imageURL,
                                                     type: .large)) { [weak self] result in
+            defer { self?.selectedProperty(at: 0) }
             switch result {
                 case .data(let data):
                     if let imageData = data.value as? Data {
@@ -73,7 +69,15 @@ final class DetailViewModel: DetailViewModelProtocol {
         }
     }
     
+    func menuButtonTapped() {
+        if let options = characterInfo?.categories {
+            propertiesMessageRelay.accept(options)
+        }
+    }
+    
     func selectedProperty(at index: Int) {
-        print(index)
+        if let description = characterInfo?.descriptions[index] {
+            propertiesRelay.accept(description)
+        }
     }
 }

@@ -54,7 +54,7 @@ class MarvelCell: UITableViewCell {
     // MARK: - Setups
     
     private func setupView() {
-        backgroundColor = Constants.Colors.black
+        backgroundColor = .clear
     }
     
     private func setupHierarchy() {

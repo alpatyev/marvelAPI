@@ -50,10 +50,21 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
     
     
     private lazy var propertiesButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = Constants.Colors.hardTint
-        button.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+        let button = GradientButton(gradientColors: [.red, .blue, .purple, .red])
+        button.titleLabel?.adjustsFontSizeToFitWidth = true
+        button.setTitle("select category", for: .normal)
+        button.titleLabel?.font = Constants.Fonts.header
         return button
+    }()
+    
+    
+    private lazy var infoLabel: UILabel = {
+        let label = GradientLabel()
+        label.makeTextColorGradient()
+        label.font = Constants.Fonts.monospaced
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        return label
     }()
     
     // MARK: - Configuration
@@ -91,7 +102,20 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
             }
         }).disposed(by: bag)
         
+        propertiesButton.rx.controlEvent(.touchUpInside)
+            .throttle(.milliseconds(100), scheduler: MainScheduler.instance)
+            .debounce(.milliseconds(150), scheduler: MainScheduler.instance)
+            .subscribe { [weak self] _ in
+            self?.viewModel?.menuButtonTapped()
+        }.disposed(by: bag)
         
+        viewModel?.propertiesRelay.subscribe { [weak self] event in
+            self?.infoLabel.text = event.element
+        }.disposed(by: bag)
+        
+        viewModel?.propertiesMessageRelay.subscribe(onNext: { [weak self] options in
+            self?.statusMessage(options)
+        }).disposed(by: bag)
     }
     
     private func setupView() {
@@ -103,6 +127,7 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
         scrollContentView.addSubview(characterImage)
         scrollContentView.addSubview(nameLabel)
         scrollContentView.addSubview(propertiesButton)
+        scrollContentView.addSubview(infoLabel)
     }
     
     private func setupLayout() {
@@ -129,58 +154,71 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
         propertiesButton.snp.makeConstraints { make in
             make.top.equalTo(nameLabel.snp.bottom).offset(Constants.Layout.indent)
             make.centerX.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.9)
+            make.width.equalToSuperview().multipliedBy(0.7)
             make.height.equalTo(Constants.Layout.defaultHeight)
+        }
+        
+        infoLabel.snp.makeConstraints { make in
+            make.top.equalTo(propertiesButton.snp.bottom).offset(Constants.Layout.indent)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.9)
+            make.height.equalTo(400)
         }
     }
     
     // MARK: - Selectable property alert
 
-    @objc private func tapped() {
-        statusMessage([String]())
-    }
-    
-    
-    let backgroundColor = EKColor.init(Constants.Colors.black.withAlphaComponent(0.5))
-    let mainColor = EKColor.init(Constants.Colors.main)
-    
     private func statusMessage(_ source: [String]?) {
-        guard let _ = source else { return }
-        
+        guard let options = source else { return }
+                
+        let backgroundColor = EKColor(Constants.Colors.black.withAlphaComponent(0.75))
+        let mainColor = EKColor(Constants.Colors.main)
+        let whiteColor = EKColor(Constants.Colors.white)
+        let highlightedColor = EKColor(Constants.Colors.white.withAlphaComponent(0.5))
+                
         var attributes = EKAttributes.bottomNote
         attributes.entryInteraction = .absorbTouches
         attributes.entryBackground = .color(color: backgroundColor)
-        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 10), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .easeOut)
-        attributes.positionConstraints.verticalOffset = Constants.Layout.indent
-        attributes.border = EKAttributes.Border.value(color: Constants.Colors.main,
-                                                      width: Constants.Layout.borderWidth)
+        attributes.displayDuration = .infinity
         
-        showAlertView(attributes: attributes)
-    
-    }
-    
-    private func showAlertView(attributes: EKAttributes) {
+        var headerLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 34),
+                                                     color: whiteColor)
+        headerLabelStyle.alignment = .center
         
-        // Ok Button
-        let okButtonLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 12), color: mainColor)
-        let okButtonLabel = EKProperty.LabelContent(text: "OK, ACCEPT", style: okButtonLabelStyle)
-        let okButton = EKProperty.ButtonContent(label: okButtonLabel, backgroundColor: .clear, highlightedBackgroundColor:  mainColor) {
-            SwiftEntryKit.dismiss {
-                print("okButton")
+        let buttonLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 24),
+                                                     color: mainColor)
+        let firstHeader = EKProperty.LabelContent(text: "categories:",
+                                                  style: headerLabelStyle)
+        let secondHeader = EKProperty.LabelContent(text: "",
+                                                   style: headerLabelStyle)
+
+        
+        var contents = [EKProperty.ButtonContent]()
+        
+        for (i, text) in options.enumerated() {
+            let label = EKProperty.LabelContent(text: text, style: buttonLabelStyle)
+            let button = EKProperty.ButtonContent(label: label,
+                                                  backgroundColor: .clear,
+                                                  highlightedBackgroundColor: highlightedColor) {
+                SwiftEntryKit.dismiss { [weak self] in
+                    self?.viewModel?.selectedProperty(at: i)
+                }
             }
-
+            contents.append(button)
         }
+       
 
-        let buttonsBarContent = EKProperty.ButtonBarContent(
-            with: okButton, okButton,
-            separatorColor: mainColor,
-            displayMode: .dark,
-            expandAnimatedly: true
-        )
-        let alertMessage = EKAlertMessage(simpleMessage: EKSimpleMessage(title: okButtonLabel,
-                                                                         description: okButtonLabel), buttonBarContent: buttonsBarContent)
-        let contentView = EKAlertMessageView(with: alertMessage)
+        let buttonsBarContent = EKProperty.ButtonBarContent(with: contents,
+                                                            separatorColor: .clear,
+                                                            expandAnimatedly: true)
+        let simpleMessage = EKSimpleMessage(title: firstHeader,
+                                            description: secondHeader)
+        let message = EKAlertMessage(simpleMessage: simpleMessage,
+                                     buttonBarContent: buttonsBarContent)
+        let contentView = EKAlertMessageView(with: message)
+        
+        SwiftEntryKit.dismiss(.all)
         SwiftEntryKit.display(entry: contentView, using: attributes)
     }
 }
