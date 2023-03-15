@@ -44,24 +44,20 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
         label.font = .boldSystemFont(ofSize: 36)
         label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .center
-        label.makeTextColorGradient()
         return label
     }()
     
-    
-    private lazy var propertiesButton: UIButton = {
-        let button = GradientButton(gradientColors: [.red, .blue, .purple, .red])
+    private lazy var propertiesButton: GradientButton = {
+        let button = GradientButton()
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.setTitle("select category", for: .normal)
         button.titleLabel?.font = Constants.Fonts.header
         return button
     }()
     
-    
     private lazy var infoLabel: UILabel = {
         let label = GradientLabel()
-        label.makeTextColorGradient()
-        label.font = Constants.Fonts.monospaced
+        label.font = Constants.Fonts.defaultText
         label.textAlignment = .left
         label.numberOfLines = 0
         return label
@@ -91,31 +87,35 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Setups
     
     private func setupRx() {
-        viewModel?.characterSubject.subscribe({ [weak self] model in
-            self?.title = model.element?.name
-            self?.nameLabel.text = model.element?.name
-            
-            if let imageData = model.element?.imageData {
-                self?.characterImage.image = UIImage(data: imageData)
-            } else {
-                self?.characterImage.image = UIImage(named: "default")
-            }
-        }).disposed(by: bag)
+        viewModel?.characterSubject
+            .subscribe({ [weak self] model in
+                self?.title = model.element?.name
+                self?.nameLabel.text = model.element?.name
+                
+                if let imageData = model.element?.imageData {
+                    self?.characterImage.image = UIImage(data: imageData)
+                } else {
+                    self?.characterImage.image = UIImage(named: "default")
+                }
+            }).disposed(by: bag)
         
-        propertiesButton.rx.controlEvent(.touchUpInside)
+        propertiesButton.rx
+            .controlEvent(.touchUpInside)
             .throttle(.milliseconds(100), scheduler: MainScheduler.instance)
             .debounce(.milliseconds(150), scheduler: MainScheduler.instance)
             .subscribe { [weak self] _ in
-            self?.viewModel?.menuButtonTapped()
-        }.disposed(by: bag)
+                self?.viewModel?.menuButtonTapped()
+            }.disposed(by: bag)
         
-        viewModel?.propertiesRelay.subscribe { [weak self] event in
-            self?.infoLabel.text = event.element
-        }.disposed(by: bag)
+        viewModel?.propertiesRelay
+            .subscribe { [weak self] event in
+                self?.infoLabel.text = event.element
+            }.disposed(by: bag)
         
-        viewModel?.propertiesMessageRelay.subscribe(onNext: { [weak self] options in
-            self?.statusMessage(options)
-        }).disposed(by: bag)
+        viewModel?.propertiesMessageRelay
+            .subscribe(onNext: { [weak self] options in
+                self?.showOptionsMenu(options)
+            }).disposed(by: bag)
     }
     
     private func setupView() {
@@ -168,37 +168,29 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Selectable property alert
 
-    private func statusMessage(_ source: [String]?) {
+    private func showOptionsMenu(_ source: [String]?) {
         guard let options = source else { return }
-                
-        let backgroundColor = EKColor(Constants.Colors.black.withAlphaComponent(0.75))
+        
         let mainColor = EKColor(Constants.Colors.main)
         let whiteColor = EKColor(Constants.Colors.white)
+        let backgroundColor = EKColor(Constants.Colors.black.withAlphaComponent(0.75))
         let highlightedColor = EKColor(Constants.Colors.white.withAlphaComponent(0.5))
                 
         var attributes = EKAttributes.bottomNote
+        attributes.displayDuration = .infinity
         attributes.entryInteraction = .absorbTouches
         attributes.entryBackground = .color(color: backgroundColor)
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .easeOut)
-        attributes.displayDuration = .infinity
         
-        var headerLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 34),
-                                                     color: whiteColor)
+        var headerLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 34), color: whiteColor)
         headerLabelStyle.alignment = .center
-        
-        let buttonLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 24),
-                                                     color: mainColor)
-        let firstHeader = EKProperty.LabelContent(text: "categories:",
-                                                  style: headerLabelStyle)
-        let secondHeader = EKProperty.LabelContent(text: "",
-                                                   style: headerLabelStyle)
+        let buttonLabelStyle = EKProperty.LabelStyle(font: .systemFont(ofSize: 24), color: mainColor)
+        let firstHeader = EKProperty.LabelContent(text: "categories:", style: headerLabelStyle)
+        let secondHeader = EKProperty.LabelContent(text: "", style: headerLabelStyle)
 
-        
         var contents = [EKProperty.ButtonContent]()
-        
         for (i, text) in options.enumerated() {
-            let label = EKProperty.LabelContent(text: text, style: buttonLabelStyle)
-            let button = EKProperty.ButtonContent(label: label,
+            let button = EKProperty.ButtonContent(label: EKProperty.LabelContent(text: text, style: buttonLabelStyle),
                                                   backgroundColor: .clear,
                                                   highlightedBackgroundColor: highlightedColor) {
                 SwiftEntryKit.dismiss { [weak self] in
@@ -208,14 +200,11 @@ final class DetailViewController: UIViewController, UIScrollViewDelegate {
             contents.append(button)
         }
        
-
         let buttonsBarContent = EKProperty.ButtonBarContent(with: contents,
                                                             separatorColor: .clear,
                                                             expandAnimatedly: true)
-        let simpleMessage = EKSimpleMessage(title: firstHeader,
-                                            description: secondHeader)
-        let message = EKAlertMessage(simpleMessage: simpleMessage,
-                                     buttonBarContent: buttonsBarContent)
+        let simpleMessage = EKSimpleMessage(title: firstHeader, description: secondHeader)
+        let message = EKAlertMessage(simpleMessage: simpleMessage, buttonBarContent: buttonsBarContent)
         let contentView = EKAlertMessageView(with: message)
         
         SwiftEntryKit.dismiss(.all)

@@ -10,7 +10,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let rootController = UINavigationController()
         applicationCoordinator = ApplicationCoordinator(rootController)
-        applicationCoordinator?.start()
+        applicationCoordinator?.startMarvelFlow()
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = rootController

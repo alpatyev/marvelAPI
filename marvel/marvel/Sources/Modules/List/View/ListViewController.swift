@@ -4,7 +4,6 @@ import RxSwift
 import RxCocoa
 import SwiftEntryKit
 
-
 // MARK: - List view controller
 
 final class ListViewController: UIViewController, UIScrollViewDelegate {
@@ -31,7 +30,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         textField.attributedPlaceholder = NSAttributedString(
             string: "search characters",
             attributes: [.foregroundColor: Constants.Colors.main.withAlphaComponent(0.5),
-                         .font: Constants.Fonts.monospaced])
+                         .font: Constants.Fonts.defaultText])
         textField.keyboardType = .asciiCapable
         textField.keyboardAppearance = .dark
         textField.returnKeyType = .google
@@ -69,16 +68,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         setupView()
         setupHierarchy()
         setupLayout()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3,
-                                      execute: { [weak self] in
-            let random = "abcdefghijklmnopqrstuvwxyz".randomElement() ?? "s"
-            self?.viewModel?.textFieldReturned(name: String(random))
-        })
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        viewModel?.viewDidLoaded()
         setupNavigationController()
     }
     
@@ -104,34 +94,39 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupRx() {
-        searchTextField.rx.controlEvent([.editingDidEndOnExit])
+        searchTextField.rx
+            .controlEvent([.editingDidEndOnExit])
             .subscribe { [weak self] _ in
                 self?.viewModel?.textFieldReturned(name: self?.searchTextField.text)
                 self?.charactersList.isScrollEnabled = true
                 self?.charactersList.layer.opacity = 1
             }.disposed(by: bag)
         
-        searchTextField.rx.controlEvent([.editingDidBegin])
+        searchTextField.rx
+            .controlEvent([.editingDidBegin])
             .subscribe { [weak self] _ in
                 self?.charactersList.isUserInteractionEnabled = false
                 self?.charactersList.layer.opacity = 0.5
             }.disposed(by: bag)
-    
-        viewModel?.itemsRelay.asObservable()
+        
+        viewModel?.itemsRelay
+            .asObservable()
             .bind(to: charactersList.rx
                     .items(cellIdentifier: MarvelCell.id,
                            cellType: MarvelCell.self)) { _, item, cell in
                 cell.configure(with: item.name, data: item.imageData)
             }.disposed(by: bag)
         
-        charactersList.rx.itemSelected
+        charactersList.rx
+            .itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 self?.viewModel?.selected(at: indexPath)
                 self?.charactersList.deselectRow(at: indexPath, animated: true)
                 self?.charactersList.isHidden = true
             }).disposed(by: bag)
         
-        charactersList.rx.itemSelected
+        charactersList.rx
+            .itemSelected
             .debounce(.milliseconds(700), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
                 self?.charactersList.isHidden = false
@@ -190,7 +185,7 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    // MARK: - Alerts and status messages
+    // MARK: - Status messages
     
     private func statusMessage(_ text: (String, String)?) {
         guard let message = text else { return }
@@ -200,24 +195,21 @@ final class ListViewController: UIViewController, UIScrollViewDelegate {
 
         var attributes = EKAttributes.bottomFloat
         attributes.entryBackground = .color(color: backgroundColor)
-        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 4), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .easeOut)
         attributes.positionConstraints.verticalOffset = Constants.Layout.indent
+        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 4),
+                                                            scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.border = EKAttributes.Border.value(color: Constants.Colors.main,
                                                       width: Constants.Layout.borderWidth)
 
         let title = EKProperty.LabelContent(text: message.0,
-                                                style: .init(font: Constants.Fonts.subheader,
-                                                             color: mainColor))
+                                            style: .init(font: Constants.Fonts.subheader, color: mainColor))
         let description = EKProperty.LabelContent(text: message.1,
-                                                  style: .init(font: Constants.Fonts.subheader,
-                                                               color: mainColor))
-       
+                                                  style: .init(font: Constants.Fonts.subheader, color: mainColor))
         let simpleMessage = EKSimpleMessage(title: title, description: description)
         let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
-
         let contentView = EKNotificationMessageView(with: notificationMessage)
-        
+    
         SwiftEntryKit.dismiss(.all)
         SwiftEntryKit.display(entry: contentView, using: attributes)
     }

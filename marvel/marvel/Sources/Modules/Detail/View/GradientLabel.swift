@@ -1,34 +1,37 @@
 import Foundation
 import UIKit
 
-// MARK: - Make label better
+// MARK: - Make label gradient when appears
 
-class GradientLabel: UILabel {
+final class GradientLabel: UILabel {
     
-    private var gradientColors = [CGColor]()
-
+    // MARK: - Lifecycle
+    
     override func drawText(in rect: CGRect) {
-        if let gradientColor = drawGradientColor(in: rect, colors: gradientColors) {
+        if let gradientColor = drawGradientColor(in: rect,
+                                                 colors: generateRandomCgColors()) {
             self.textColor = gradientColor
         }
         super.drawText(in: rect)
     }
     
-    func makeTextColorGradient() {
+    // MARK: - Random color pattern
+    
+    private func generateRandomCgColors() -> [CGColor] {
+        var pattern = [CGColor]()
         let baseColors = [UIColor.red.cgColor,
                           UIColor.blue.cgColor,
                           UIColor.purple.cgColor]
         
-        var pattern = [CGColor]()
         for _ in 0...Int.random(in: 2...5) {
             pattern.append(baseColors.randomElement() ?? UIColor.red.cgColor)
         }
-        
-        gradientColors = pattern
+        return pattern
     }
-
     
-    func drawGradientColor(in rect: CGRect, colors: [CGColor]) -> UIColor? {
+    // MARK: - Apply gradient
+
+    private func drawGradientColor(in rect: CGRect, colors: [CGColor]) -> UIColor? {
         let currentContext = UIGraphicsGetCurrentContext()
         currentContext?.saveGState()
         defer { currentContext?.restoreGState() }

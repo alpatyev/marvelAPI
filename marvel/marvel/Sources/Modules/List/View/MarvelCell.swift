@@ -20,7 +20,7 @@ class MarvelCell: UITableViewCell {
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.textColor = Constants.Colors.main
-        label.font = Constants.Fonts.monospaced
+        label.font = Constants.Fonts.defaultText
         return label
     }()
     

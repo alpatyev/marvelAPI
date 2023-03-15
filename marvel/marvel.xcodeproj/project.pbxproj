@@ -34,6 +34,7 @@
 		64A9CA6029BCEC4B00F381D5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 64A9CA5F29BCEC4B00F381D5 /* SnapKit */; };
 		64A9CA6A29BCEC7300F381D5 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 64A9CA6929BCEC7300F381D5 /* Alamofire */; };
 		64F8561729BD34DF0014AA06 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F8561629BD34DF0014AA06 /* MainCoordinator.swift */; };
+		64FD76AF29C1345B00A0AEDB /* Data as kilobytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FD76AE29C1345B00A0AEDB /* Data as kilobytes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -73,6 +74,7 @@
 		648E6B6229BA3EAB00BD0C20 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		648E6B6429BA3EB900BD0C20 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		64F8561629BD34DF0014AA06 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
+		64FD76AE29C1345B00A0AEDB /* Data as kilobytes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data as kilobytes.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +191,7 @@
 		648E6B5929BA3D7700BD0C20 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				64FD76AE29C1345B00A0AEDB /* Data as kilobytes.swift */,
 				643363A229BA6AB100584EB3 /* String + Date.swift */,
 			);
 			path = Extensions;
@@ -376,6 +379,7 @@
 				643363B129BB80DF00584EB3 /* Constants.swift in Sources */,
 				648E6B4329BA3BED00BD0C20 /* SceneDelegate.swift in Sources */,
 				643363A929BB6A2700584EB3 /* CharacterModel.swift in Sources */,
+				64FD76AF29C1345B00A0AEDB /* Data as kilobytes.swift in Sources */,
 				644EB69229BEA83000438B85 /* GradientLabel.swift in Sources */,
 				648E6B6329BA3EAB00BD0C20 /* ListViewController.swift in Sources */,
 				643363A129BA5D4000584EB3 /* MarvelResponseType.swift in Sources */,

@@ -1,21 +1,26 @@
-import Foundation
 import UIKit
 
 // MARK: - Marvel Coordinator
 
 class ApplicationCoordinator {
+    
+    // MARK: - Root controller
 
     private var navigationController: UINavigationController
+    
+    // MARK: - Init
     
     init(_ navigationController : UINavigationController) {
         self.navigationController = navigationController
     }
     
-    public func start() {
+    // MARK: - MarvelFlow
+    
+    func startMarvelFlow() {
         presentMarvelListScene()
     }
     
-    public func presentMarvelListScene() {
+    func presentMarvelListScene() {
         let listViewController = ListViewController()
         let listViewModel = ListViewModel()
         
@@ -25,7 +30,7 @@ class ApplicationCoordinator {
         navigationController.pushViewController(listViewController, animated: false)
     }
     
-    public func presentMarvelDetailScene(model: SpecificCharacterModel, preview: Data?) {
+    func presentMarvelDetailScene(model: SpecificCharacterModel, preview: Data?) {
         let detailViewController = DetailViewController()
         let detailViewModel = DetailViewModel()
         

@@ -17,14 +17,15 @@ final class MarvelURLBuilder {
         components.path = "/v1/public/characters"
         return components
     }()
+            
+    // MARK: - Main method
     
-    // MARK: - Public methods
-    
-    public func createURL(with type: MarvelRequestType) -> URL? {
+    func createURL(with type: MarvelRequestType) -> URL? {
         switch type {
             case .getCharactersForName(let name):
                 components.path = "/v1/public/characters"
-                components.queryItems = [URLQueryItem(name: "nameStartsWith", value: name)] + createTodayQuery()
+                components.queryItems = [URLQueryItem(name: "nameStartsWith", value: name),
+                                         URLQueryItem(name: "limit", value: "\(Int.random(in: 20...100))")] + createTodayQuery()
             case .getCharacterForID(let int):
                 components.path = "/v1/public/characters/\(int)"
                 components.queryItems = createTodayQuery()
@@ -34,7 +35,7 @@ final class MarvelURLBuilder {
         return components.url
     }
     
-    // MARK: - Private methods
+    // MARK: - Required query for most requests
     
     private func createTodayQuery() -> [URLQueryItem] {
         let todayDate = Date().asString(with: "yyyy.MM.dd")

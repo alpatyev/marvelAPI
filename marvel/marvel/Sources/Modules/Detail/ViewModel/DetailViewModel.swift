@@ -2,7 +2,6 @@ import Foundation
 import RxSwift
 import RxRelay
 
-
 // MARK: - Detail view model protocol
 
 protocol DetailViewModelProtocol {
@@ -61,6 +60,7 @@ final class DetailViewModel: DetailViewModelProtocol {
             switch result {
                 case .data(let data):
                     if let imageData = data.value as? Data {
+                        print("LOADED IMG+ FOR ID \"\(self?.characterModel?.id ?? 0)\" : \(imageData.kilobytesString())")
                         self?.characterModel?.imageData = imageData
                     }
                 case .error(let error):

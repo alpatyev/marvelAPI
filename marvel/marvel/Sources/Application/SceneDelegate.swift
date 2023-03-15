@@ -11,7 +11,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
      
         let rootController = UINavigationController()
         applicationCoordinator = ApplicationCoordinator(rootController)
-        applicationCoordinator?.start()
+        applicationCoordinator?.startMarvelFlow()
         
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = rootController

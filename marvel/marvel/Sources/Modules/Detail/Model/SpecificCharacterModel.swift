@@ -28,7 +28,7 @@ struct Item: Decodable {
     let name: String
 }
 
-// MARK: - Model as description
+// MARK: - Model presented as categories + description strings
 
 final class CharacterInfo {
     
@@ -41,9 +41,9 @@ final class CharacterInfo {
     
     private func createTextualRepresentation(from characterModel: SpecificCharacterModel?) {
         guard let model = characterModel else { return }
+        
         var infoLine = "ABOUT.."
         categories.append(infoLine)
-        
         if let id = model.id {
             infoLine += "\n\n#️⃣ ID: [\(id)]"
         }

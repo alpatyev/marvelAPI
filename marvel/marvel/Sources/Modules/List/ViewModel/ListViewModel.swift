@@ -9,15 +9,16 @@ protocol ListViewModelProtocol {
     var messageRelay: PublishRelay<(String, String)> { get }
     var itemsRelay: PublishRelay<[CharacterItem]> { get }
     
+    func viewDidLoaded()
+    func viewOnScreen()
     func textFieldReturned(name text: String?)
     func selected(at indexPath: IndexPath)
-    func viewOnScreen()
 }
 
 // MARK: - List view model
 
 final class ListViewModel: ListViewModelProtocol {
-    
+   
     // MARK: - Private properties
     
     private let bag = DisposeBag()
@@ -43,16 +44,12 @@ final class ListViewModel: ListViewModelProtocol {
     
     // MARK: - View input
     
-    func textFieldReturned(name text: String?) {
-        guard let name = text, name != "" else {
-            messageRelay.accept(("Sorry...", "Please, type name of character."))
-            return
-        }
-        requestForCharactersWith(name: name.trimmingCharacters(in: .whitespacesAndNewlines))
-    }
-    
-    func selected(at indexPath: IndexPath) {
-        requestForCharacterWith(id: itemsStorage[indexPath.row].id)
+    func viewDidLoaded() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3,
+                                      execute: { [weak self] in
+            let random = "abcdefghijklmnopqrstuvwxyz".randomElement() ?? "s"
+            self?.textFieldReturned(name: String(random))
+        })
     }
     
     func viewOnScreen() {
@@ -69,10 +66,23 @@ final class ListViewModel: ListViewModelProtocol {
         }
     }
     
+    func textFieldReturned(name text: String?) {
+        guard let name = text, name != "" else {
+            messageRelay.accept(("Sorry...", "Please, type name of character."))
+            return
+        }
+        requestForCharactersWith(name: name.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+    
+    func selected(at indexPath: IndexPath) {
+        requestForCharacterWith(id: itemsStorage[indexPath.row].id)
+    }
+    
     // MARK: - Private methods
     
     private func requestForCharactersWith(name: String) {
         loadingRelay.accept(true)
+        
         networkService.getData(using: .getCharactersForName(name)) { [weak self] result in
             defer { self?.loadingRelay.accept(false) }
             switch result {
@@ -100,7 +110,7 @@ final class ListViewModel: ListViewModelProtocol {
             switch result {
                 case .data(let data):
                     if let imageData = data.value as? Data {
-                        print("IMG \(index) LOADED: \(imageData.debugDescription)")
+                        print("IMG \(index) LOADED: \(imageData.kilobytesString())")
                         self?.itemsStorage[index].imageData = imageData
                     } else {
                         print("IMG \(index) DATA ERROR")
@@ -114,7 +124,7 @@ final class ListViewModel: ListViewModelProtocol {
     private func requestForCharacterWith(id: Int) {
         loadingRelay.accept(true)
         let characterItem = self.itemsStorage.first { $0.id == id }
-        print("REQUEST FOR: \(characterItem?.name ?? "who")")
+
         networkService.getData(using: .getCharacterForID(id)) { [weak self] result in
             defer { self?.loadingRelay.accept(false) }
             switch result {
