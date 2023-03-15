@@ -29,6 +29,8 @@ class MarvelCell: UITableViewCell {
     public func configure(with text: String, data: Data?) {
         if let imageData = data {
             icon.image = UIImage(data: imageData)
+        } else {
+            icon.image = UIImage(named: "default")
         }
         nameLabel.text = text
     }
